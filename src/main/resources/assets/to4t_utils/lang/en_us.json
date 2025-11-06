@@ -1,0 +1,23 @@
+{
+  "ftbsc-tspr.configuration.title": "To4T Utils Config",
+  "ftbsc-tspr.configuration.section.examplemod.common.toml": "To4T Utils Config",
+  "ftbsc-tspr.configuration.section.examplemod.common.toml.title": "To4T Utils Config",
+  "ftbsc-tspr.configuration.autofish": "Auto-Fish",
+  "ftbsc-tspr.configuration.autodisconnect": "Auto-Disconnect",
+  "ftbsc-tspr.configuration.autoclick": "Auto-Click",
+  "ftbsc-tspr.configuration.autowalk": "Auto-Walk",
+  "ftbsc-tspr.configuration.chattweaks": "Chat Tweaks",
+  "ftbsc-tspr.configuration.enabled": "Enabled",
+  "ftbsc-tspr.configuration.recast": "Recast",
+  "ftbsc-tspr.configuration.delay": "Delay",
+  "ftbsc-tspr.configuration.threshold": "Threshold",
+  "ftbsc-tspr.configuration.interval": "Interval",
+  "ftbsc-tspr.configuration.attack": "Attack",
+  "ftbsc-tspr.configuration.timestamps": "Timestamps",
+
+  "key.categories.ftbsc-tspr.toggles": "ftbsc-tspr Mod Toggles",
+  "key.ftbsc-tspr.autofish": "Auto-Fish",
+  "key.ftbsc-tspr.autowalk": "Auto-Walk",
+  "key.ftbsc-tspr.autoclick": "Auto-Click",
+  "key.ftbsc-tspr.autodisconnect": "Auto-Disconnect"
+}

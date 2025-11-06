@@ -1,0 +1,6 @@
+{
+  "required": true,
+  "package": "ftbsc.tspr.asm.patches",
+  "plugin": "ftbsc.tspr.TiramisuperMixinPlugin",
+  "mixins": ["FakeMixin"]
+}

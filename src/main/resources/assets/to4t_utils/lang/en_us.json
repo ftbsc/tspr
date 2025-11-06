@@ -15,9 +15,9 @@
   "tspr.configuration.attack": "Attack",
   "tspr.configuration.timestamps": "Timestamps",
 
-  "key.categories.ftbsc-tspr.toggles": "ftbsc-tspr Mod Toggles",
-  "key.ftbsc.autofish": "Auto-Fish",
-  "key.ftbsc.autowalk": "Auto-Walk",
-  "key.ftbsc.autoclick": "Auto-Click",
-  "key.ftbsc.autodisconnect": "Auto-Disconnect"
+  "key.categories.tspr.toggles": "Tiramisuper Mod Toggles",
+  "key.tspr.autofish": "Auto-Fish",
+  "key.tspr.autowalk": "Auto-Walk",
+  "key.tspr.autoclick": "Auto-Click",
+  "key.tspr.autodisconnect": "Auto-Disconnect"
 }

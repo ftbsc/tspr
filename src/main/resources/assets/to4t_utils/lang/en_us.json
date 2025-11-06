@@ -1,7 +1,7 @@
 {
-  "tspr.configuration.title": "To4T Utils Config",
-  "tspr.configuration.section.examplemod.common.toml": "To4T Utils Config",
-  "tspr.configuration.section.examplemod.common.toml.title": "To4T Utils Config",
+  "tspr.configuration.title": "Tiramisuper Config",
+  "tspr.configuration.section.examplemod.common.toml": "Tiramisuper Config",
+  "tspr.configuration.section.examplemod.common.toml.title": "Tiramisuper Config",
   "tspr.configuration.autofish": "Auto-Fish",
   "tspr.configuration.autodisconnect": "Auto-Disconnect",
   "tspr.configuration.autoclick": "Auto-Click",

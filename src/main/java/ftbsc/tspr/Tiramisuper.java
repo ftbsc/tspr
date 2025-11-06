@@ -32,7 +32,7 @@ import ftbsc.tspr.modules.client.ChatTweaks;
 @Mod(value = Tiramisuper.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = Tiramisuper.MODID, value = Dist.CLIENT)
 public class Tiramisuper {
-	public static final String MODID = "ftbsc-tspr";
+	public static final String MODID = "tspr";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Scheduler SCHEDULER = new Scheduler();
 
@@ -53,7 +53,7 @@ public class Tiramisuper {
 		}
 
 		ModConfigSpec spec = builder.build();
-		modContainer.registerConfig(ModConfig.Type.COMMON, spec, "ftbsc-tspr.toml");
+		modContainer.registerConfig(ModConfig.Type.COMMON, spec, "tspr.toml");
 		modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
 		for (BaseModule mod : Tiramisuper.MODULES) {

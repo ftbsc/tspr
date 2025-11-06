@@ -26,9 +26,9 @@ public abstract class TogglableModule extends BaseModule {
 	}
 
 	private KeyMapping toggleKey = new KeyMapping(
-		String.format("key.ftbsc-tspr.%s", this.name.toLowerCase()),
+		String.format("key.tspr.%s", this.name.toLowerCase()),
 		GLFW.GLFW_KEY_UNKNOWN,
-		"key.categories.ftbsc-tspr.toggles"
+		"key.categories.tspr.toggles"
 	);
 
 	public KeyMapping getToggleKey() {

@@ -1,5 +1,5 @@
 package ftbsc.tspr;
 
-import ftbsc.tspr.ext.MixinPlugin;
+import ftbsc.lll.mixin.LilleroMixinPlugin;
 
-public class TiramisuperMixinPlugin extends MixinPlugin {}
+public class TiramisuperMixinPlugin extends LilleroMixinPlugin {}

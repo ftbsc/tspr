@@ -29,6 +29,10 @@ public class ChatTweaks extends BaseModule {
 			String timestamp = String.format("%s | ", dtf.format(localTime));
 			event.message = MutableComponent.create(new PlainTextContents.LiteralContents(timestamp))
 				.setStyle(Style.EMPTY.withColor(0x555555))
+				.append(
+					MutableComponent.create(new PlainTextContents.LiteralContents(""))
+						.setStyle(Style.EMPTY.withColor(0xFFFFFF))
+				)
 				.append(event.message);
 		}
 	}

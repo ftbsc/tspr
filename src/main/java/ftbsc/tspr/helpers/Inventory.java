@@ -1,4 +1,4 @@
-package ftbsc.tspr.core;
+package ftbsc.tspr.helpers;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.ClickType;
@@ -7,6 +7,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.regex.Pattern;
+
+import ftbsc.tspr.api.IGlobals;
 
 public class Inventory implements IGlobals {
 

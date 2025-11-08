@@ -1,10 +1,10 @@
-package ftbsc.tspr.core.module;
+package ftbsc.tspr.api.module;
 
-import ftbsc.tspr.core.IGlobals;
+import ftbsc.tspr.api.IGlobals;
+import ftbsc.tspr.api.ILoadable;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.NeoForge;
 
-public abstract class BaseModule implements IGlobals {
+public abstract class BaseModule implements IGlobals, ILoadable {
 
 	/**
 	 * define config arguments inside here, will be scoped automatically
@@ -22,7 +22,7 @@ public abstract class BaseModule implements IGlobals {
 		builder.pop();
 	}
 
-	public void register() {
-		NeoForge.EVENT_BUS.register(this);
+	public String getName() {
+		return this.name;
 	}
 }

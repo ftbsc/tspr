@@ -1,4 +1,4 @@
-package ftbsc.tspr.core.module;
+package ftbsc.tspr.api.module;
 
 import org.lwjgl.glfw.GLFW;
 

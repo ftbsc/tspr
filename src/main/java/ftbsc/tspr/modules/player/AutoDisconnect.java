@@ -8,8 +8,12 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 
-import ftbsc.tspr.core.module.TogglableModule;
+import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.api.ILoadable;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(ILoadable.class)
 public class AutoDisconnect extends TogglableModule {
 
 	private ModConfigSpec.DoubleValue threshold;

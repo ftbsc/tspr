@@ -1,6 +1,6 @@
 package ftbsc.tspr.modules.interaction;
 
-import ftbsc.tspr.core.module.TogglableModule;
+import ftbsc.tspr.api.module.TogglableModule;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;

@@ -1,10 +1,15 @@
 package ftbsc.tspr.modules.movement;
 
-import ftbsc.tspr.core.module.TogglableModule;
+import ftbsc.tspr.api.module.TogglableModule;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import ftbsc.tspr.api.ILoadable;
+
+import com.google.auto.service.AutoService;
+
+@AutoService(ILoadable.class)
 public class AutoWalk extends TogglableModule {
 
 	protected void config(ModConfigSpec.Builder builder) {}

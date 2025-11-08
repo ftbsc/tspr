@@ -1,4 +1,4 @@
-package ftbsc.tspr.core;
+package ftbsc.tspr.helpers;
 
 import java.util.ArrayList;
 import java.util.HashSet;

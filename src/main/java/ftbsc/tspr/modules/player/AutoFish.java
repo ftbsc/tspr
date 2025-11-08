@@ -10,9 +10,12 @@ import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
+import ftbsc.tspr.api.ILoadable;
+import ftbsc.tspr.api.module.TogglableModule;
 
-import ftbsc.tspr.core.module.TogglableModule;
+import com.google.auto.service.AutoService;
 
+@AutoService(ILoadable.class)
 public class AutoFish extends TogglableModule {
 
 	public ModConfigSpec.BooleanValue recast;

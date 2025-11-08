@@ -3,14 +3,19 @@ package ftbsc.tspr.modules.client;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import ftbsc.tspr.asm.events.ChatClearEvent;
-import ftbsc.tspr.asm.events.ChatMessageEvent;
-import ftbsc.tspr.core.module.BaseModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import ftbsc.tspr.asm.events.ChatClearEvent;
+import ftbsc.tspr.asm.events.ChatMessageEvent;
+import ftbsc.tspr.api.module.BaseModule;
+import ftbsc.tspr.api.ILoadable;
+
+import com.google.auto.service.AutoService;
+
+@AutoService(ILoadable.class)
 public class ChatTweaks extends BaseModule {
 
 	private ModConfigSpec.BooleanValue timestamps;

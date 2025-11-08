@@ -3,22 +3,26 @@ package ftbsc.tspr.modules.client;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import ftbsc.tspr.asm.events.ChatClearEvent;
 import ftbsc.tspr.asm.events.ChatMessageEvent;
 import ftbsc.tspr.core.module.BaseModule;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ChatTweaks extends BaseModule {
 
 	private ModConfigSpec.BooleanValue timestamps;
+	private ModConfigSpec.BooleanValue keepPrevious;
 
 	public void config(ModConfigSpec.Builder builder) {
 		this.timestamps = builder
 			.comment("add timestamps to chat")
 			.define("timestamps", true);
+		this.keepPrevious = builder
+			.comment("prevent chat log from being cleared")
+			.define("keepPrevious", true);
 	}
 
 	@SubscribeEvent
@@ -27,12 +31,19 @@ public class ChatTweaks extends BaseModule {
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 			LocalTime localTime = LocalTime.now();
 			String timestamp = String.format("%s | ", dtf.format(localTime));
-			event.message = MutableComponent.create(new PlainTextContents.LiteralContents(""))
-				.append(
-					MutableComponent.create(new PlainTextContents.LiteralContents(timestamp))
-						.withStyle(ChatFormatting.DARK_GRAY)
-				)
+			event.message = Component.literal("")
+				.append(Component.literal(timestamp).withStyle(ChatFormatting.DARK_GRAY))
 				.append(event.message);
+		}
+	}
+
+	@SubscribeEvent
+	void onChatClear(ChatClearEvent event) {
+		if (this.keepPrevious.getAsBoolean()) {
+			event.setCanceled(true);
+			MC.gui.getChat().addMessage(
+				Component.literal("----------").withStyle(ChatFormatting.DARK_GRAY)
+			);
 		}
 	}
 }

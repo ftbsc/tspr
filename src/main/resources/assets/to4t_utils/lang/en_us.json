@@ -14,6 +14,7 @@
   "tspr.configuration.interval": "Interval",
   "tspr.configuration.attack": "Attack",
   "tspr.configuration.timestamps": "Timestamps",
+  "tspr.configuration.keepPrevious": "Keep Chat History",
 
   "key.categories.tspr.toggles": "Tiramisuper Mod Toggles",
   "key.tspr.autofish": "Auto-Fish",

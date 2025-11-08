@@ -1,10 +1,15 @@
 package ftbsc.tspr.modules.interaction;
 
-import ftbsc.tspr.api.module.TogglableModule;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.api.ILoadable;
+
+import com.google.auto.service.AutoService;
+
+@AutoService(ILoadable.class)
 public class AutoClick extends TogglableModule {
 
 	private ModConfigSpec.IntValue interval;
@@ -35,8 +40,10 @@ public class AutoClick extends TogglableModule {
 		if (this.counter == 0) {
 			if (this.attack.getAsBoolean()) {
 				MC.options.keyAttack.setDown(true);
+				SCHEDULER.schedule(1, () -> MC.options.keyAttack.setDown(false));
 			} else {
 				MC.options.keyUse.setDown(true);
+				SCHEDULER.schedule(1, () -> MC.options.keyUse.setDown(false));
 			}
 			this.counter = this.interval.getAsInt();
 		}

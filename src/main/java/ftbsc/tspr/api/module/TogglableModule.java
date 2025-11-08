@@ -21,6 +21,15 @@ public abstract class TogglableModule extends BaseModule {
 		return !previous;
 	}
 
+	public boolean setEnabled(boolean enabled) {
+		boolean previous = this.enabled.getAsBoolean();
+		if (previous != enabled) {
+			this.enabled.set(enabled);
+			Chat.message("%s %s", this.name, previous ? "disabled" : "enabled");
+		}
+		return previous;
+	}
+
 	private KeyMapping toggleKey = new KeyMapping(
 		String.format("key.tspr.%s", this.name.toLowerCase()),
 		GLFW.GLFW_KEY_UNKNOWN,

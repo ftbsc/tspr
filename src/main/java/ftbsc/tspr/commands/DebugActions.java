@@ -8,6 +8,7 @@ import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Chat;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.util.Mth;
@@ -21,7 +22,7 @@ public class DebugActions extends BaseCommand {
 		DECREASE
 	}
 
-	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder) {
+	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(
 				Commands.literal("reloadchunks")

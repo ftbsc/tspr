@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.logging.LogUtils;
 
 import ftbsc.tspr.api.ILoadable;
@@ -55,8 +55,10 @@ public class Tiramisuper {
 	private final ModContainer modContainer;
 	private final CommandDispatcher<CommandSourceStack> dispatcher;
 
+	private static Tiramisuper INSTANCE;
+
 	public Tiramisuper(IEventBus modEventBus, ModContainer modContainer) {
-		LifecycleHandler.mod = this;
+		Tiramisuper.INSTANCE = this;
 		this.modContainer = modContainer;
 
 		for (ILoadable loadable : ServiceLoader.load(ILoadable.class)) {
@@ -70,9 +72,6 @@ public class Tiramisuper {
 		}
 
 		this.dispatcher = new CommandDispatcher<>();
-		for (BaseCommand cmd : this.commands) {
-			cmd.register(this.dispatcher);
-		}
 
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		for (BaseModule mod : this.modules) {
@@ -91,10 +90,16 @@ public class Tiramisuper {
 		}
 	}
 
+	public static List<BaseModule> mods() {
+		return Tiramisuper.INSTANCE.modules;
+	}
+
 	@SubscribeEvent
 	public void onCommandSuggestionsBuilt(RegisterClientCommandsEvent event) {
-		for (CommandNode<CommandSourceStack> child : this.dispatcher.getRoot().getChildren()) {
-			event.getDispatcher().getRoot().addChild(child);
+		for (BaseCommand cmd : this.commands) {
+			LiteralCommandNode<CommandSourceStack> node = cmd.build(event.getBuildContext());
+			this.dispatcher.getRoot().addChild(node);
+			event.getDispatcher().getRoot().addChild(node);
 		}
 	}
 
@@ -148,13 +153,11 @@ public class Tiramisuper {
 
 	@EventBusSubscriber(modid = Tiramisuper.MODID, value = Dist.CLIENT)
 	private static class LifecycleHandler {
-		private static Tiramisuper mod;
-
 		@SubscribeEvent
 		static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
-			event.register(LifecycleHandler.mod.optionsKey);
+			event.register(Tiramisuper.INSTANCE.optionsKey);
 
-			for (BaseModule mod : LifecycleHandler.mod.modules) {
+			for (BaseModule mod : Tiramisuper.INSTANCE.modules) {
 				if (mod instanceof TogglableModule) {
 					TogglableModule toggleMod = (TogglableModule) mod;
 					event.register(toggleMod.getToggleKey());

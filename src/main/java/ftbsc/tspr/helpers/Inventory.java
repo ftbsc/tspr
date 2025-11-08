@@ -1,6 +1,7 @@
 package ftbsc.tspr.helpers;
 
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -19,13 +20,12 @@ public class Inventory implements IGlobals {
 		return player.inventoryMenu.slots.subList(HOTBAR_START, HOTBAR_START + HOTBAR_SIZE);
 	}
 
+	public static double itemAttachDamage(ItemStack item) {
+		return (double) item.getDamageValue();
+	}
+
 	public static double itemAttackSpeed(ItemStack item) {
-		// Collection<AttributeModifier> speed_attrs =
-		// 	item.getAttributeModifiers(EquipmentSlotGroup.MAINHAND)
-		// 		.get(Attributes.ATTACK_SPEED);
-		// if (speed_attrs.isEmpty()) return 0.;
-		// return Math.abs(speed_attrs.iterator().next().getAmount());
-		return 0.;
+		return MC.player.getAttributeValue(Attributes.ATTACK_SPEED);
 	}
 
 	public static double itemDPS(ItemStack item) {

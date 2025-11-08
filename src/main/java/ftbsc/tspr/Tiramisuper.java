@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.logging.LogUtils;
 
 import ftbsc.tspr.api.ILoadable;
@@ -27,6 +28,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -86,6 +88,13 @@ public class Tiramisuper {
 
 		for (BaseModule mod : this.modules) {
 			NeoForge.EVENT_BUS.register(mod);
+		}
+	}
+
+	@SubscribeEvent
+	public void onCommandSuggestionsBuilt(RegisterClientCommandsEvent event) {
+		for (CommandNode<CommandSourceStack> child : this.dispatcher.getRoot().getChildren()) {
+			event.getDispatcher().getRoot().addChild(child);
 		}
 	}
 

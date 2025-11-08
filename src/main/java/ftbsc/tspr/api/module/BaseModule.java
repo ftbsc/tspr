@@ -12,10 +12,8 @@ public abstract class BaseModule implements IGlobals, ILoadable {
 	 */
 	protected abstract void config(ModConfigSpec.Builder builder);
 
-	protected final String name = this.getClass().getSimpleName();
-
 	public void prepareConfig(ModConfigSpec.Builder builder) {
-		builder.push(this.name.toLowerCase());
+		builder.push(this.getName().toLowerCase());
 
 		this.config(builder);
 
@@ -23,6 +21,6 @@ public abstract class BaseModule implements IGlobals, ILoadable {
 	}
 
 	public String getName() {
-		return this.name;
+		return this.getClass().getSimpleName();
 	}
 }

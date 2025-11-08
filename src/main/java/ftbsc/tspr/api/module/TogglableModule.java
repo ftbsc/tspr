@@ -17,7 +17,7 @@ public abstract class TogglableModule extends BaseModule {
 	public boolean toggle() {
 		boolean previous = this.enabled.getAsBoolean();
 		this.enabled.set(!previous);
-		Chat.message("%s %s", this.name, previous ? "disabled" : "enabled");
+		Chat.message("%s %s", this.getName(), previous ? "disabled" : "enabled");
 		return !previous;
 	}
 
@@ -25,13 +25,13 @@ public abstract class TogglableModule extends BaseModule {
 		boolean previous = this.enabled.getAsBoolean();
 		if (previous != enabled) {
 			this.enabled.set(enabled);
-			Chat.message("%s %s", this.name, previous ? "disabled" : "enabled");
+			Chat.message("%s %s", this.getName(), previous ? "disabled" : "enabled");
 		}
 		return previous;
 	}
 
 	private KeyMapping toggleKey = new KeyMapping(
-		String.format("key.tspr.%s", this.name.toLowerCase()),
+		String.format("key.tspr.%s", this.getName().toLowerCase()),
 		GLFW.GLFW_KEY_UNKNOWN,
 		"key.categories.tspr.toggles"
 	);
@@ -42,10 +42,10 @@ public abstract class TogglableModule extends BaseModule {
 
 	@Override
 	public void prepareConfig(ModConfigSpec.Builder builder) {
-		builder.push(this.name.toLowerCase());
+		builder.push(this.getName().toLowerCase());
 
 		this.enabled = builder
-			.comment(String.format("Should %s be enabled?", this.name))
+			.comment(String.format("Should %s be enabled?", this.getName()))
 			.define("enabled", false);
 
 		this.config(builder);

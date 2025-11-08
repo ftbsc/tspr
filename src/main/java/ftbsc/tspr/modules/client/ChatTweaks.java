@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import ftbsc.tspr.asm.events.ChatMessageEvent;
 import ftbsc.tspr.core.module.BaseModule;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -27,11 +27,10 @@ public class ChatTweaks extends BaseModule {
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 			LocalTime localTime = LocalTime.now();
 			String timestamp = String.format("%s | ", dtf.format(localTime));
-			event.message = MutableComponent.create(new PlainTextContents.LiteralContents(timestamp))
-				.setStyle(Style.EMPTY.withColor(0x555555))
+			event.message = MutableComponent.create(new PlainTextContents.LiteralContents(""))
 				.append(
-					MutableComponent.create(new PlainTextContents.LiteralContents(""))
-						.setStyle(Style.EMPTY.withColor(0xFFFFFF))
+					MutableComponent.create(new PlainTextContents.LiteralContents(timestamp))
+						.withStyle(ChatFormatting.DARK_GRAY)
 				)
 				.append(event.message);
 		}

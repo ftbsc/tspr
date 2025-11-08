@@ -2,8 +2,8 @@ package ftbsc.tspr.api.module;
 
 import org.lwjgl.glfw.GLFW;
 
+import ftbsc.tspr.helpers.Chat;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public abstract class TogglableModule extends BaseModule {
@@ -17,11 +17,7 @@ public abstract class TogglableModule extends BaseModule {
 	public boolean toggle() {
 		boolean previous = this.enabled.getAsBoolean();
 		this.enabled.set(!previous);
-		MC.gui.getChat().addMessage(
-			Component
-				.literal(String.format(">> %s %s", this.name, previous ? "disabled" : "enabled"))
-				.withColor(0xBF616A)
-		);
+		Chat.message("%s %s", this.name, previous ? "disabled" : "enabled");
 		return !previous;
 	}
 

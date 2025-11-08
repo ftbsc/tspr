@@ -2,7 +2,9 @@ package ftbsc.tspr.modules.defense;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -57,15 +59,15 @@ public class Aura extends TogglableModule {
 
 	private void lookAtHidden(EntityAnchorArgument.Anchor anchor, Vec3 target) {
 		// This code comes from vanilla Minecraft, but we send a packet rather than turning player
-		Vec3 translated = anchor.apply(MC.player);
-		double d0 = target.x - translated.x;
-		double d1 = target.y - translated.y;
-		double d2 = target.z - translated.z;
-		double d3 = (double) Math.sqrt(d0 * d0 + d2 * d2);
-		double xRot = (-(Math.atan2(d1, d3) * (180. / Math.PI))) % 360.;
-		double yRot = ((Math.atan2(d2, d0) * (180. / Math.PI)) - 90.) % 360.;
+		Vec3 vec3 = anchor.apply(MC.player);
+		double d0 = target.x - vec3.x;
+		double d1 = target.y - vec3.y;
+		double d2 = target.z - vec3.z;
+		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+		float xRot = Mth.wrapDegrees((float)(-(Mth.atan2(d1, d3) * 180.0F / (float)Math.PI)));
+		float yRot = Mth.wrapDegrees((float)(Mth.atan2(d2, d0) * 180.0F / (float)Math.PI) - 90.0F);
 		MC.player.connection.send(new ServerboundMovePlayerPacket.Rot(
-			(float) xRot, (float) yRot, MC.player.onGround(), MC.player.horizontalCollision
+			xRot, yRot, MC.player.onGround(), MC.player.horizontalCollision
 		));
 	}
 
@@ -79,8 +81,10 @@ public class Aura extends TogglableModule {
 
 		float distance = Float.MAX_VALUE;
 		Entity target = null;
+		EntityAnchorArgument.Anchor anchor = EntityAnchorArgument.Anchor.EYES;
 
 		for (Entity e : MC.level.entitiesForRendering()) {
+			EntityAnchorArgument.Anchor local_anchor = EntityAnchorArgument.Anchor.EYES;
 			if (e.equals(MC.player)) continue;
 			if (!(e instanceof LivingEntity)) continue;
 			if (!e.isAlive()) continue;
@@ -92,10 +96,19 @@ public class Aura extends TogglableModule {
 			// 		continue;
 			// 	}
 			// }
-			if (this.trace.get() && !MC.player.hasLineOfSight(e)) continue;
+			if (this.trace.get()) {
+				if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getEyeY())) {
+					local_anchor = EntityAnchorArgument.Anchor.EYES;
+				} else if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getY())) {
+					local_anchor = EntityAnchorArgument.Anchor.FEET;
+				} else {
+					continue;
+				}
+			}
 
 			float dist = MC.player.distanceTo(e);
 			if (dist < distance) {
+				anchor = local_anchor;
 				distance = dist;
 				target = e;
 			}
@@ -104,13 +117,13 @@ public class Aura extends TogglableModule {
 		if (target != null) {
 			switch (this.look.get()) {
 				case ONCE:
-					MC.player.lookAt(EntityAnchorArgument.Anchor.EYES, target.getEyePosition(1.0F));
+					MC.player.lookAt(anchor, target.getEyePosition(1.0F));
 					MC.player.connection.send(new ServerboundMovePlayerPacket.Rot(
 						MC.player.getYRot(), MC.player.getXRot(), MC.player.onGround(), MC.player.horizontalCollision
 					));
 					break;
 				case PACKET:
-					this.lookAtHidden(EntityAnchorArgument.Anchor.EYES, target.getEyePosition(1.0F));
+					this.lookAtHidden(anchor, target.getEyePosition(1.0F));
 					break;
 				case NONE: break;
 			}

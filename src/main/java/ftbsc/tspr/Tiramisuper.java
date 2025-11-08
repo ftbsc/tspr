@@ -7,12 +7,16 @@ import java.util.ServiceLoader;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 
 import ftbsc.tspr.api.ILoadable;
+import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Scheduler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,6 +24,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.client.ClientCommandHandler;
+import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -36,6 +42,7 @@ public class Tiramisuper {
 	public static final Scheduler SCHEDULER = new Scheduler();
 
 	private final List<BaseModule> modules = new ArrayList<>();
+	private final List<BaseCommand> commands = new ArrayList<>();
 
 	private final KeyMapping optionsKey = new KeyMapping(
 		"key.tspr.showOptions",
@@ -44,21 +51,28 @@ public class Tiramisuper {
 	);
 
 	private final ModContainer modContainer;
+	private final CommandDispatcher<CommandSourceStack> dispatcher;
 
 	public Tiramisuper(IEventBus modEventBus, ModContainer modContainer) {
 		LifecycleHandler.mod = this;
 		this.modContainer = modContainer;
 
-		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-
 		for (ILoadable loadable : ServiceLoader.load(ILoadable.class)) {
 			if (loadable instanceof BaseModule) {
 				this.modules.add((BaseModule) loadable);
+			} else if (loadable instanceof BaseCommand) {
+				this.commands.add((BaseCommand) loadable);
 			} else {
 				LOGGER.warn("unexpected ILoadable : {}", loadable.getName());
 			}
 		}
 
+		this.dispatcher = new CommandDispatcher<>();
+		for (BaseCommand cmd : this.commands) {
+			cmd.register(this.dispatcher);
+		}
+
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		for (BaseModule mod : this.modules) {
 			mod.prepareConfig(builder);
 		}
@@ -72,6 +86,21 @@ public class Tiramisuper {
 
 		for (BaseModule mod : this.modules) {
 			NeoForge.EVENT_BUS.register(mod);
+		}
+	}
+
+	@SubscribeEvent
+	void onClientChatEvent(ClientChatEvent event) {
+		if (event.getMessage().startsWith("/")) {
+			CommandSourceStack source = ClientCommandHandler.getSource();
+			try {
+				LOGGER.info("Running command {}", event.getMessage());
+				this.dispatcher.execute(event.getMessage().substring(1), source);
+				Minecraft.getInstance().gui.getChat().addRecentChat(event.getMessage());
+				event.setCanceled(true);
+			} catch (CommandSyntaxException e) {
+				LOGGER.error("Syntax error in command: {}", e.toString());
+			}
 		}
 	}
 

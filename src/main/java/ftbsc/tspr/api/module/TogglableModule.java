@@ -42,6 +42,8 @@ public abstract class TogglableModule extends BaseModule {
 
 	@Override
 	public void prepareConfig(ModConfigSpec.Builder builder) {
+		String category = this.getClass().getPackageName().replace("ftbsc.tspr.modules.", "");
+		builder.push(category);
 		builder.push(this.getName().toLowerCase());
 
 		this.enabled = builder
@@ -50,6 +52,7 @@ public abstract class TogglableModule extends BaseModule {
 
 		this.config(builder);
 
+		builder.pop();
 		builder.pop();
 	}
 

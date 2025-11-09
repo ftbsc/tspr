@@ -75,7 +75,7 @@ public class Tiramisuper {
 
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		for (BaseModule mod : this.modules) {
-			mod.prepareConfig(builder);
+			mod.buildConfig(builder);
 		}
 
 		ModConfigSpec spec = builder.build();

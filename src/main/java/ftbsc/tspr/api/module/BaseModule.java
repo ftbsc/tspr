@@ -12,13 +12,26 @@ public abstract class BaseModule implements IGlobals, ILoadable {
 	 */
 	protected abstract void config(ModConfigSpec.Builder builder);
 
-	public void prepareConfig(ModConfigSpec.Builder builder) {
+	protected void prepareConfig(ModConfigSpec.Builder builder) {
+		this.config(builder);
+	}
+
+
+
+
+	public final void buildConfig(ModConfigSpec.Builder builder) {
+		this.pushConfig(builder);
+		this.prepareConfig(builder);
+		this.popConfig(builder);
+	}
+
+	private final void pushConfig(ModConfigSpec.Builder builder) {
 		String category = this.getClass().getPackageName().replace("ftbsc.tspr.modules.", "");
 		builder.push(category);
 		builder.push(this.getName().toLowerCase());
+	}
 
-		this.config(builder);
-
+	private final void popConfig(ModConfigSpec.Builder builder) {
 		builder.pop();
 		builder.pop();
 	}

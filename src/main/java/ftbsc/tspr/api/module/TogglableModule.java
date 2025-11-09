@@ -42,18 +42,10 @@ public abstract class TogglableModule extends BaseModule {
 
 	@Override
 	public void prepareConfig(ModConfigSpec.Builder builder) {
-		String category = this.getClass().getPackageName().replace("ftbsc.tspr.modules.", "");
-		builder.push(category);
-		builder.push(this.getName().toLowerCase());
-
 		this.enabled = builder
 			.comment(String.format("Should %s be enabled?", this.getName()))
 			.define("enabled", false);
 
 		this.config(builder);
-
-		builder.pop();
-		builder.pop();
 	}
-
 }

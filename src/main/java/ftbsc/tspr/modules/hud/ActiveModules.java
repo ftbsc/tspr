@@ -2,12 +2,12 @@ package ftbsc.tspr.modules.hud;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.auto.service.AutoService;
 
 import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
-import ftbsc.tspr.api.module.BaseModule;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.api.module.TogglableModule;
 import net.minecraft.ChatFormatting;
@@ -37,20 +37,19 @@ public class ActiveModules extends HudModule {
 	@SubscribeEvent
 	void onTick(ClientTickEvent.Post event) {
 		if (!this.isEnabled()) return;
-		List<Component> out = new ArrayList<>();
-		for (BaseModule mod : Tiramisuper.mods()) {
-			if (mod instanceof ActiveModules) continue;
-			if (!(mod instanceof TogglableModule)) continue;
-			TogglableModule toggle = (TogglableModule) mod;
-			if (!toggle.isEnabled()) continue;
-			out.add(
-				Component.literal("")
-					.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
-					.append(Component.literal(" >> ").withColor(0xBF616A))
-					.append(Component.literal(toggle.getName()))
-			);
-		}
-		this.modList = out;
+		this.modList = Tiramisuper.mods().stream()
+			.filter(m -> m instanceof TogglableModule)
+			.filter(m -> !(m instanceof HudModule))
+			.map(m -> (TogglableModule) m)
+			.filter(m -> m.isEnabled())
+			.map(m -> m.getName())
+			.sorted((a, b) -> Integer.compare(b.length(), a.length()))
+			.map(n ->	Component.literal("")
+				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
+				.append(Component.literal(" >> ").withColor(0xBF616A))
+				.append(Component.literal(n))
+			)
+			.collect(Collectors.toList());
 	}
 
 	public GuiLayer getLayer() {

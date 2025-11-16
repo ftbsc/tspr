@@ -46,6 +46,6 @@ public abstract class TogglableModule extends BaseModule {
 			.comment(String.format("Should %s be enabled?", this.getName()))
 			.define("enabled", false);
 
-		this.config(builder);
+		super.prepareConfig(builder);
 	}
 }

@@ -85,13 +85,13 @@ public abstract class HudModule extends TogglableModule {
 			case MIDDLELEFT:
 			case MIDDLECENTER:
 			case MIDDLERIGHT:
-				y = (MC.getWindow().getHeight() / 2) + y - (height / 2);
+				y = (MC.getWindow().getGuiScaledHeight() / 2) + y - (height / 2);
 				break;
 
 			case BOTTOMLEFT:
 			case BOTTOMCENTER:
 			case BOTTOMRIGHT:
-				y = MC.getWindow().getHeight() - y - height;
+				y = MC.getWindow().getGuiScaledHeight() - y - height;
 				break;
 		}
 

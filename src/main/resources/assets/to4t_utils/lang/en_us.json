@@ -15,6 +15,7 @@
   "tspr.configuration.autodisconnect": "Auto-Disconnect",
   "tspr.configuration.autoclick": "Auto-Click",
   "tspr.configuration.autowalk": "Auto-Walk",
+  "tspr.configuration.blockupdates": "Block Updates",
   "tspr.configuration.chattweaks": "Chat Tweaks",
   "tspr.configuration.infodisplay": "Info Display",
   "tspr.configuration.enabled": "Enabled",
@@ -45,6 +46,8 @@
   "tspr.configuration.tps": "TPS",
   "tspr.configuration.tps-sample-size": "TPS Sample Size",
   "tspr.configuration.speed-sample-size": "Speed Sample Size",
+  "tspr.configuration.duration": "Duration",
+  "tspr.configuration.alpha": "Alpha",
 
   "key.categories.tspr.global": "Tiramisuper",
   "key.categories.tspr.toggles": "Tiramisuper Mod Toggles",

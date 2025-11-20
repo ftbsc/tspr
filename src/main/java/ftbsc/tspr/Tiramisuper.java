@@ -49,10 +49,12 @@ public class Tiramisuper {
 	private final List<BaseModule> modules = new ArrayList<>();
 	private final List<BaseCommand> commands = new ArrayList<>();
 
+	public static final KeyMapping.Category category = new KeyMapping.Category(ResourceLocation.parse("ftbsc:tspr.options.global"));
+
 	private final KeyMapping optionsKey = new KeyMapping(
 		"key.tspr.showOptions",
 		GLFW.GLFW_KEY_UNKNOWN,
-		"key.categories.tspr.global"
+		Tiramisuper.category
 	);
 
 	private final ModContainer modContainer;

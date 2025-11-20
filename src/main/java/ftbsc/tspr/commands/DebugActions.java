@@ -6,7 +6,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Chat;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.screens.debug.DebugOptionsScreen;
 import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,6 +28,37 @@ public class DebugActions extends BaseCommand {
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(
+				Commands.literal("overlay")
+					.then(
+						Commands.literal("network")
+							.executes(ctx -> {
+								MC.getDebugOverlay().toggleNetworkCharts();
+								Chat.message("toggled debug overlay network chart");
+								return 0;
+							})
+					)
+					.then(
+						Commands.literal("fps")
+							.executes(ctx -> {
+								MC.getDebugOverlay().toggleFpsCharts();
+								Chat.message("toggled debug overlay fps chart");
+								return 0;
+							})
+					)
+					.then(
+						Commands.literal("profiler")
+							.executes(ctx -> {
+								MC.getDebugOverlay().toggleProfilerChart();
+								Chat.message("toggled debug overlay profiler chart");
+								return 0;
+							})
+					)
+					.executes(ctx -> {
+						Chat.message(ChatFormatting.RED, "no argument given");
+						return 1;
+					})
+			)
+			.then(
 				Commands.literal("reloadchunks")
 					.executes(ctx -> {
 						MC.levelRenderer.allChanged();
@@ -35,8 +69,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("hitboxes")
 					.executes(ctx -> {
-						boolean flag = !MC.getEntityRenderDispatcher().shouldRenderHitBoxes();
-						MC.getEntityRenderDispatcher().setRenderHitBoxes(flag);
+						boolean flag = MC.debugEntries.toggleStatus(DebugScreenEntries.ENTITY_HITBOXES);
 						Chat.message("entity hitboxes %s", flag ? "enabled" : "disabled");
 						return 0;
 					})
@@ -60,7 +93,7 @@ public class DebugActions extends BaseCommand {
 								RenderDistanceAction action = ctx.getArgument("action", RenderDistanceAction.class);
 								int new_distance = Mth.clamp(
 									MC.options.renderDistance().get() + (action == RenderDistanceAction.INCREASE ? +1 : -1),
-									Options.RENDER_DISTANCE_TINY, Options.RENDER_DISTANCE_REALLY_FAR
+									Options.RENDER_DISTANCE_SHORT, Options.RENDER_DISTANCE_REALLY_FAR
 								);
 								MC.options.renderDistance().set(new_distance);
 								Chat.message("set render distance to %d", new_distance);
@@ -74,7 +107,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("boundaries")
 					.executes(ctx -> {
-						boolean flag1 = MC.debugRenderer.switchRenderChunkborder();
+						boolean flag1 = MC.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_BORDERS);
 						Chat.message("chunk boundaries %s", flag1 ? "enabled" : "disabled");
 						return 0;
 					})
@@ -84,6 +117,7 @@ public class DebugActions extends BaseCommand {
 					.executes(ctx -> {
 						MC.options.advancedItemTooltips = !MC.options.advancedItemTooltips;
 						MC.options.save();
+						Chat.message("toggled advanced item tooltips");
 						return 0;
 					})
 			)
@@ -91,6 +125,7 @@ public class DebugActions extends BaseCommand {
 				Commands.literal("reloadresources")
 					.executes(ctx -> {
 						MC.reloadResourcePacks();
+						Chat.message("reloaded resource pack");
 						return 0;
 					})
 			)
@@ -98,6 +133,13 @@ public class DebugActions extends BaseCommand {
 				Commands.literal("gamemode")
 					.executes(ctx -> {
 						MC.setScreen(new GameModeSwitcherScreen());
+						return 0;
+					})
+			)
+			.then(
+				Commands.literal("screen")
+					.executes(ctx -> {
+						MC.setScreen(new DebugOptionsScreen());
 						return 0;
 					})
 			)

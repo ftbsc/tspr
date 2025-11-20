@@ -5,7 +5,7 @@
 
 ![TiramiSuPeR](https://cdn.alemi.dev/proj/tspr.png)
 
-> modern (1.21.8), neoforge, low-expectations minecraft utility client built from scratch
+> modern (1.21.10), neoforge, low-expectations minecraft utility client built from scratch
 
 > [!IMPORTANT]
 > currently very barebones but we'll get there

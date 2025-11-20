@@ -4,11 +4,14 @@ import org.lwjgl.glfw.GLFW;
 
 import ftbsc.tspr.helpers.Chat;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public abstract class TogglableModule extends BaseModule {
 
 	protected ModConfigSpec.BooleanValue enabled;
+
+	private static final KeyMapping.Category category = new KeyMapping.Category(ResourceLocation.parse("ftbsc:tspr.options.toggles"));
 
 	public boolean isEnabled() {
 		return this.enabled.getAsBoolean();
@@ -33,7 +36,7 @@ public abstract class TogglableModule extends BaseModule {
 	private KeyMapping toggleKey = new KeyMapping(
 		String.format("key.tspr.%s", this.getName().toLowerCase()),
 		GLFW.GLFW_KEY_UNKNOWN,
-		"key.categories.tspr.toggles"
+		TogglableModule.category
 	);
 
 	public KeyMapping getToggleKey() {

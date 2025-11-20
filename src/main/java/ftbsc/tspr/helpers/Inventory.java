@@ -1,11 +1,14 @@
 package ftbsc.tspr.helpers;
 
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -21,18 +24,44 @@ public class Inventory implements IGlobals {
 	}
 
 	public static double itemAttachDamage(ItemStack item) {
-		return (double) item.getDamageValue();
+		List<Double> attackDamage = new ArrayList<>();
+		item.getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attr, mod) -> {
+			if (attr.equals(Attributes.ATTACK_DAMAGE)) {
+				attackDamage.add(mod.amount());
+			}
+
+		});
+		if (attackDamage.size() > 1) {
+			LOGGER.warn("item has multiple attack speeds?");
+		} else if (attackDamage.isEmpty()) {
+			LOGGER.error("could not find attack speed attribute for item");
+			return 0.1;
+		}
+		return attackDamage.getFirst();
 	}
 
 	public static double itemAttackSpeed(ItemStack item) {
-		return MC.player.getAttributeValue(Attributes.ATTACK_SPEED);
+		List<Double> attackSpeed = new ArrayList<>();
+		item.getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attr, mod) -> {
+			if (attr.equals(Attributes.ATTACK_SPEED)) {
+				attackSpeed.add(mod.amount());
+			}
+
+		});
+		if (attackSpeed.size() > 1) {
+			LOGGER.warn("item has multiple attack speeds?");
+		} else if (attackSpeed.isEmpty()) {
+			LOGGER.error("could not find attack speed attribute for item");
+			return 0.1;
+		}
+		return attackSpeed.getFirst();
 	}
 
 	public static double itemDPS(ItemStack item) {
 		double damage = (double) item.getDamageValue();
 		double speed  = Inventory.itemAttackSpeed(item);
 
-		// int sharpness = getEnchLevel(item, Enchantments.SHARPNESS);
+		// int sharpness = item.getEnchantmentLevel(Enchantments.SHARPNESS);
 		// if (sharpness > 0) {
 		// 	damage += 0.5 * Math.max(0, sharpness - 1) + 1.;
 		// }

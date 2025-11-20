@@ -32,7 +32,7 @@ public class ActiveModules extends HudModule {
 			.defineEnum("color", ChatFormatting.WHITE);
 	}
 
-	private List<Component> modList = new ArrayList<>();
+	private List<String> modList = new ArrayList<>();
 
 	@SubscribeEvent
 	void onTick(ClientTickEvent.Post event) {
@@ -44,11 +44,6 @@ public class ActiveModules extends HudModule {
 			.filter(m -> m.isEnabled())
 			.map(m -> m.getName())
 			.sorted((a, b) -> Integer.compare(b.length(), a.length()))
-			.map(n ->	Component.literal("")
-				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
-				.append(Component.literal(" >> ").withColor(0xBF616A))
-				.append(Component.literal(n))
-			)
 			.collect(Collectors.toList());
 	}
 
@@ -65,18 +60,21 @@ public class ActiveModules extends HudModule {
 
 		@Override
 		public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
-			if (!this.mod.isEnabled()) return;
+			if (this.mod.shouldHide()) return;
+			gui.pose().pushMatrix();
+			gui.pose().scale((float) this.mod.scale.getAsDouble());
 			int y = this.mod.getY();
-			for (Component row : this.mod.modList) {
+			for (String row : this.mod.modList) {
 				gui.drawString(
 					MC.font,
-					row,
+					this.mod.prefixed(row),
 					this.mod.getX(),
 					y,
 					ARGB.opaque(this.mod.color.get().getColor())
 				);
-				y += MC.font.lineHeight + 1;
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
+			gui.pose().popMatrix();
 		}
 	}
 }

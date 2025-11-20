@@ -1,5 +1,8 @@
 package ftbsc.tspr.api.module;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -59,13 +62,13 @@ public abstract class HudModule extends TogglableModule {
 			case BOTTOMCENTER:
 			case MIDDLECENTER:
 			case TOPCENTER:
-				x = (MC.getWindow().getWidth() / 2) + x - (width / 2);
+				x = (MC.getWindow().getGuiScaledWidth() / 2) + x - (width / 2);
 				break;
 
 			case TOPRIGHT:
 			case MIDDLERIGHT:
 			case BOTTOMRIGHT:
-				x = MC.getWindow().getWidth() - x - width;
+				x = MC.getWindow().getGuiScaledWidth() - x - width;
 				break;
 		}
 
@@ -96,5 +99,65 @@ public abstract class HudModule extends TogglableModule {
 		}
 
 		return Mth.floor((double) y / this.scale.get());
+	}
+
+	protected int inc(int y, int val) {
+		switch (this.anchor.get()) {
+			case BOTTOMLEFT:
+			case BOTTOMCENTER:
+			case BOTTOMRIGHT:
+				return y - val;
+
+			// TODO: might be cool to get the total height and "center" it?
+			case MIDDLELEFT:
+			case MIDDLECENTER:
+			case MIDDLERIGHT:
+				return y + val;
+
+			case TOPLEFT:
+			case TOPCENTER:
+			case TOPRIGHT:
+			default:
+				return y + val;
+		}
+	}
+
+	protected Component prefixed(String text, Object... args) {
+		return this.prefixed(Component.literal(String.format(text, args)));
+	}
+
+	protected Component prefixed(Component text) {
+		switch (this.anchor.get()) {
+			case TOPRIGHT:
+			case MIDDLERIGHT:
+			case BOTTOMRIGHT:
+				return Component.literal("")
+				.append(text)
+				.append(Component.literal(" < ").withColor(0xBF616A))
+				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)));
+
+			case BOTTOMCENTER:
+			case MIDDLECENTER:
+			case TOPCENTER:
+				return Component.literal("")
+				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
+				.append(Component.literal(" > ").withColor(0xBF616A))
+				.append(text)
+				.append(Component.literal(" < ").withColor(0xBF616A))
+				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)));
+
+			case TOPLEFT:
+			case MIDDLELEFT:
+			case BOTTOMLEFT:
+			default:
+				return Component.literal("")
+				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
+				.append(Component.literal(" > ").withColor(0xBF616A))
+				.append(text);
+		}
+	}
+
+	protected boolean shouldHide() {
+		return !this.enabled.getAsBoolean() || MC.getDebugOverlay().showDebugScreen() || MC.options.hideGui;
 	}
 }

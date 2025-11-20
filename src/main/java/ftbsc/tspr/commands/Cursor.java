@@ -28,6 +28,7 @@ public class Cursor extends BaseCommand {
 						BlockPos pos = new BlockPos(Mth.floor(vec.x), Mth.floor(vec.y), Mth.floor(vec.z));
 						switch (MC.hitResult.getType()) {
 							case BLOCK:
+								// TODO blocks on the floor don't work because it uses the block just above
 								BlockState state = MC.level.getBlockState(pos);
 								Chat.message("Block @ %s: %s", pos.toString(), state.toString());
 								return 1;

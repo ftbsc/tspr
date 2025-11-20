@@ -49,8 +49,8 @@
   "tspr.configuration.duration": "Duration",
   "tspr.configuration.alpha": "Alpha",
 
-  "key.categories.tspr.global": "Tiramisuper",
-  "key.categories.tspr.toggles": "Tiramisuper Mod Toggles",
+  "key.category.ftbsc.tspr.options.global": "Tiramisuper",
+  "key.category.ftbsc.tspr.options.toggles": "Tiramisuper Mod Toggles",
   "key.tspr.showOptions": "Open mod options",
   "key.tspr.activemodules": "Active Modules",
   "key.tspr.aura": "Aura",

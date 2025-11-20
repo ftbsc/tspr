@@ -42,7 +42,8 @@ public class Aura extends TogglableModule {
 			.defineInRange("reach", 4., 0., Double.MAX_VALUE);
 		this.strength = builder
 			.comment("minimum attack strenght to wait before attacking")
-			.defineInRange("strength", 1., 0., 1.);
+			.defineInRange("strength", 1., 0., 2.);
+			// TODO what is the real max attack strength?
 		this.trace = builder
 			.comment("only attack entities that can be seen (raytraced)")
 			.define("trace", true);
@@ -97,9 +98,9 @@ public class Aura extends TogglableModule {
 			// 	}
 			// }
 			if (this.trace.get()) {
-				if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getEyeY())) {
+				if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getEyeY() - 0.5)) {
 					local_anchor = EntityAnchorArgument.Anchor.EYES;
-				} else if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getY())) {
+				} else if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getY() + 0.5)) {
 					local_anchor = EntityAnchorArgument.Anchor.FEET;
 				} else {
 					continue;
@@ -117,13 +118,13 @@ public class Aura extends TogglableModule {
 		if (target != null) {
 			switch (this.look.get()) {
 				case ONCE:
-					MC.player.lookAt(anchor, target.getEyePosition(1.0F));
+					MC.player.lookAt(anchor, target.getEyePosition(.0F));
 					MC.player.connection.send(new ServerboundMovePlayerPacket.Rot(
 						MC.player.getYRot(), MC.player.getXRot(), MC.player.onGround(), MC.player.horizontalCollision
 					));
 					break;
 				case PACKET:
-					this.lookAtHidden(anchor, target.getEyePosition(1.0F));
+					this.lookAtHidden(anchor, target.getEyePosition(.0F));
 					break;
 				case NONE: break;
 			}

@@ -8,10 +8,13 @@ import com.google.auto.service.AutoService;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.asm.events.PacketEvent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.phys.Vec3;
@@ -45,6 +48,15 @@ public class InfoDisplay extends HudModule {
 		this.tps = builder
 			.comment("show calculated server ticks-per-second")
 			.define("tps", true);
+		this.tps_sample_size = builder
+			.comment("how many samples to keep for evaluating average tps")
+			.defineInRange("tps-sample-size", 20, 1, Integer.MAX_VALUE);
+		this.speed_sample_size = builder
+			.comment("how many samples to keep for evaluating average speed")
+			.defineInRange("tps-sample-size", 100, 1, Integer.MAX_VALUE);
+		this.color = builder
+			.comment("color to use")
+			.defineEnum("color", ChatFormatting.WHITE);
 	}
 
 	public GuiLayer getLayer() {
@@ -66,6 +78,9 @@ public class InfoDisplay extends HudModule {
 	private ModConfigSpec.BooleanValue fps;
 	private ModConfigSpec.BooleanValue ping;
 	private ModConfigSpec.BooleanValue tps;
+	private ModConfigSpec.IntValue tps_sample_size;
+	private ModConfigSpec.IntValue speed_sample_size;
+	private ModConfigSpec.EnumValue<ChatFormatting> color;
 	// private ModConfigSpec.BooleanValue biome;
 	// private ModConfigSpec.BooleanValue light;
 	// private ModConfigSpec.BooleanValue saturation;
@@ -76,8 +91,6 @@ public class InfoDisplay extends HudModule {
 	// private ModConfigSpec.BooleanValue client_chunk_size;
 	// private ModConfigSpec.BooleanValue hide_effects;
 
-	private ModConfigSpec.ConfigValue<Integer> tps_sample_size;
-	private ModConfigSpec.ConfigValue<Integer> speed_sample_size;
 
 	@SubscribeEvent
 	public void onTick(ClientTickEvent.Post event) {
@@ -86,7 +99,7 @@ public class InfoDisplay extends HudModule {
 			this.instant_speed = this.last_position.distanceTo(MC.player.position());
 			this.last_position = MC.player.position();
 			PlayerInfo info = MC.getConnection().getPlayerInfo(
-				MC.player.getGameProfile().getId()
+				MC.player.getGameProfile().id()
 			);
 			if (info != null) { // bungeecord switching makes this null for a second
 				this.instant_ping = info.getLatency();
@@ -104,11 +117,6 @@ public class InfoDisplay extends HudModule {
 		double buf = 0.0;
 		for (double v : this.speed_history) { buf += v; }
 		this.average_speed = buf / this.speed_history.size();
-
-		if (this.last_fps_string != MC.fpsString) {
-			this.last_fps_string = MC.fpsString;
-			this.curr_fps = this.last_fps_string.split(" ")[0];
-		}
 	}
 
 	@SubscribeEvent
@@ -130,9 +138,6 @@ public class InfoDisplay extends HudModule {
 			this.instant_tps = 20 / (positive_time / (this.tps_history.size() - 1));
 		}
 	}
-
-	private String last_fps_string;
-	private String curr_fps = "0";
 
 	// Time utils
 	private String getTimePhase(long time) {
@@ -166,15 +171,35 @@ public class InfoDisplay extends HudModule {
 		}
 		@Override
 		public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
-			if (!this.mod.isEnabled()) return;
+			if (this.mod.shouldHide()) return;
 
 			int y = this.mod.getY();
 			int x = this.mod.getX();
+			int color = ARGB.opaque(this.mod.color.get().getColor());
+			float scale = (float) this.mod.scale.getAsDouble();
+
+			gui.pose().pushMatrix();
+			gui.pose().scale(4.f * scale);
+
+			Component logo = Component.literal("TSPR")
+				.withStyle(
+					Style.EMPTY
+						.withBold(true)
+						.withColor(0xBF616A)
+						.withShadowColor(0x000000)
+						.withHoverEvent(new HoverEvent.ShowText(Component.literal("Tiramisuper")))
+				);
+
 
 			if (this.mod.logo.get()) {
-				gui.drawStringWithBackdrop(MC.font, Component.literal("TSPR"), x, y, 4, ARGB.opaque(0xBF616A));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, logo, x, y, color);
+				y = this.mod.inc(y, (MC.font.lineHeight + 1) * 4);
 			}
+
+
+			gui.pose().popMatrix();
+			gui.pose().pushMatrix();
+			gui.pose().scale(scale);
 
 			long day = 0;
 			long time = 0;
@@ -184,34 +209,36 @@ public class InfoDisplay extends HudModule {
 			}
 
 			if (this.mod.fps.get()) {
-				gui.drawString(MC.font, String.format("> fps: %s", this.mod.curr_fps), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("fps: %d", MC.getFps()), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
 
 			if (this.mod.ping.get()) {
-				gui.drawString(MC.font, String.format("> ping: %d", this.mod.instant_ping), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("ping: %d", this.mod.instant_ping), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
 
 			if (this.mod.tps.get()) {
-				gui.drawString(MC.font, String.format("> tps: %.1f", this.mod.instant_tps), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("tps: %.1f", this.mod.instant_tps), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
 
 			if (this.mod.speed.get()) {
-				gui.drawString(MC.font, String.format("> speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
 
 			if (this.mod.age.get()) {
-				gui.drawString(MC.font, String.format("> age: %d (~%d days)", day, day / (3 * 24)), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("age: %d (~%d days)", day, day / (3 * 24)), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
 
 			if (this.mod.time.get()) {
-				gui.drawString(MC.font, String.format("> time: %d/%d (%s)", (time / this.mod.TPS), this.mod.getNextStep(time), this,mod.getTimePhase(time)), x, y, ARGB.opaque(0xFFFFFF));
-				y += MC.font.lineHeight + 1;
+				gui.drawString(MC.font, this.mod.prefixed("time: %d/%d (%s)", (time / this.mod.TPS), (this.mod.getNextStep(time) / this.mod.TPS), this.mod.getTimePhase(time)), x, y, color);
+				y = this.mod.inc(y, MC.font.lineHeight + 1);
 			}
+
+			gui.pose().popMatrix();
 		}
 	}
 	

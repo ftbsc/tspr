@@ -1,22 +1,15 @@
 package ftbsc.tspr.modules.vision;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
-import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.ScannerModule;
-import ftbsc.tspr.api.module.TogglableModule;
-import ftbsc.tspr.helpers.Draw;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 @AutoService(ILoadable.class)

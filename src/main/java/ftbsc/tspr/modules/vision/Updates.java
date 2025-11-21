@@ -26,8 +26,6 @@ public class Updates extends TogglableModule {
 	private ModConfigSpec.DoubleValue alpha;
 	private ModConfigSpec.EnumValue<ChatFormatting> color;
 
-	// TODO allow to customize color
-
 	private final ConcurrentLinkedQueue<Tuple<BlockPos, Long>> updates = new ConcurrentLinkedQueue<>();
 
 	public void config(ModConfigSpec.Builder builder) {

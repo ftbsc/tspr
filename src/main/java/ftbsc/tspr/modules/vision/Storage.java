@@ -1,90 +1,60 @@
 package ftbsc.tspr.modules.vision;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
-import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
-import ftbsc.tspr.api.module.TogglableModule;
-import ftbsc.tspr.helpers.Draw;
+import ftbsc.tspr.api.module.ScannerModule;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 @AutoService(ILoadable.class)
-public class Storage extends TogglableModule {
-	private ModConfigSpec.DoubleValue alpha;
+public class Storage extends ScannerModule {
 
-	private List<Block> handledBlocks = Arrays.asList(
-		Blocks.CHEST,
-		Blocks.TRAPPED_CHEST,
-		Blocks.BARREL,
+	public void config(ModConfigSpec.Builder builder) {}
+	
+	protected Iterable<Block> getBlocks() {
+		return Arrays.asList(
+			Blocks.CHEST,
+			Blocks.TRAPPED_CHEST,
+			Blocks.BARREL,
 
-		Blocks.DISPENSER,
-		Blocks.DROPPER,
-		Blocks.FURNACE,
-		Blocks.BLAST_FURNACE,
-		Blocks.SMOKER,
+			Blocks.DISPENSER,
+			Blocks.DROPPER,
+			Blocks.FURNACE,
+			Blocks.BLAST_FURNACE,
+			Blocks.SMOKER,
 
-		Blocks.ENDER_CHEST,
+			Blocks.ENDER_CHEST,
 
-		Blocks.HOPPER,
+			Blocks.HOPPER,
 
-		Blocks.SHULKER_BOX,
-		Blocks.WHITE_SHULKER_BOX,
-		Blocks.ORANGE_SHULKER_BOX,
-		Blocks.MAGENTA_SHULKER_BOX,
-		Blocks.LIGHT_BLUE_SHULKER_BOX,
-		Blocks.YELLOW_SHULKER_BOX,
-		Blocks.LIME_SHULKER_BOX,
-		Blocks.PINK_SHULKER_BOX,
-		Blocks.GRAY_SHULKER_BOX,
-		Blocks.LIGHT_GRAY_SHULKER_BOX,
-		Blocks.CYAN_SHULKER_BOX,
-		Blocks.PURPLE_SHULKER_BOX,
-		Blocks.BLUE_SHULKER_BOX,
-		Blocks.BROWN_SHULKER_BOX,
-		Blocks.GREEN_SHULKER_BOX,
-		Blocks.RED_SHULKER_BOX,
-		Blocks.BLACK_SHULKER_BOX
-	);
-
-	public Storage() {
-		for (Block block : this.handledBlocks) {
-			Tiramisuper.SCANNER.watch(block);
-		}
+			Blocks.SHULKER_BOX,
+			Blocks.WHITE_SHULKER_BOX,
+			Blocks.ORANGE_SHULKER_BOX,
+			Blocks.MAGENTA_SHULKER_BOX,
+			Blocks.LIGHT_BLUE_SHULKER_BOX,
+			Blocks.YELLOW_SHULKER_BOX,
+			Blocks.LIME_SHULKER_BOX,
+			Blocks.PINK_SHULKER_BOX,
+			Blocks.GRAY_SHULKER_BOX,
+			Blocks.LIGHT_GRAY_SHULKER_BOX,
+			Blocks.CYAN_SHULKER_BOX,
+			Blocks.PURPLE_SHULKER_BOX,
+			Blocks.BLUE_SHULKER_BOX,
+			Blocks.BROWN_SHULKER_BOX,
+			Blocks.GREEN_SHULKER_BOX,
+			Blocks.RED_SHULKER_BOX,
+			Blocks.BLACK_SHULKER_BOX
+		);
 	}
 
-	public void config(ModConfigSpec.Builder builder) {
-		this.alpha = builder
-			.comment("alpha channel value for highlights")
-			.defineInRange("alpha", .25, 0., 1.);
-	}
-
-	@SubscribeEvent
-	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
-		if (!this.enabled.getAsBoolean()) {
-			return;
-		}
-
-		float alpha = (float) this.alpha.getAsDouble();
-
-		Draw draw = Draw.prepare(event);
-
-		for (Block block : this.handledBlocks) {
-			Integer color = Storage.blockColors.get(block);
-			if (color == null) continue;
-			for (BlockPos pos : Tiramisuper.SCANNER.getAll(block)) {
-				draw.drawFilledBox(pos, color, alpha);
-			}
-		}
+	protected Integer getColor(Block block) {
+		return Storage.blockColors.get(block);
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(

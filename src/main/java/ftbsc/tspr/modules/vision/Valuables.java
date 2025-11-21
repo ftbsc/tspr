@@ -1,14 +1,13 @@
 package ftbsc.tspr.modules.vision;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
 import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
-import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.api.module.ScannerModule;
 import ftbsc.tspr.helpers.Draw;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,9 +21,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
-public class Valuables extends TogglableModule {
+public class Valuables extends ScannerModule {
 
-	private ModConfigSpec.DoubleValue alpha;
 	private ModConfigSpec.BooleanValue ancientDebris;
 	private ModConfigSpec.BooleanValue diamonds;
 	private ModConfigSpec.BooleanValue redstone;
@@ -38,47 +36,7 @@ public class Valuables extends TogglableModule {
 	private ModConfigSpec.DoubleValue distance;
 	private Map<Block, ModConfigSpec.BooleanValue> blockConfigs;
 
-	private List<Block> handledBlocks = Arrays.asList(
-		Blocks.ANCIENT_DEBRIS,
-
-		Blocks.DIAMOND_ORE,
-		Blocks.DEEPSLATE_DIAMOND_ORE,
-
-		Blocks.REDSTONE_ORE,
-		Blocks.DEEPSLATE_REDSTONE_ORE,
-
-		Blocks.IRON_ORE,
-		Blocks.DEEPSLATE_IRON_ORE,
-
-		Blocks.GOLD_ORE,
-		Blocks.DEEPSLATE_GOLD_ORE,
-		Blocks.NETHER_GOLD_ORE,
-
-		Blocks.COPPER_ORE,
-		Blocks.DEEPSLATE_COPPER_ORE,
-
-		Blocks.COAL_ORE,
-		Blocks.DEEPSLATE_COAL_ORE,
-
-		Blocks.EMERALD_ORE,
-		Blocks.DEEPSLATE_EMERALD_ORE,
-
-		Blocks.LAPIS_ORE,
-		Blocks.DEEPSLATE_LAPIS_ORE,
-
-		Blocks.NETHER_QUARTZ_ORE
-	);
-
-	public Valuables() {
-		for (Block block : this.handledBlocks) {
-			Tiramisuper.SCANNER.watch(block);
-		}
-	}
-
 	public void config(ModConfigSpec.Builder builder) {
-		this.alpha = builder
-			.comment("alpha channel value for highlights")
-			.defineInRange("alpha", .1, 0., 1.);
 		this.ancientDebris = builder
 			.comment("show Ancient Debris")
 			.define("ancient-debris", true);
@@ -146,8 +104,42 @@ public class Valuables extends TogglableModule {
 		);
 	}
 
+	protected Iterable<Block> getBlocks() {
+		return Arrays.asList(
+			Blocks.ANCIENT_DEBRIS,
+
+			Blocks.DIAMOND_ORE,
+			Blocks.DEEPSLATE_DIAMOND_ORE,
+
+			Blocks.REDSTONE_ORE,
+			Blocks.DEEPSLATE_REDSTONE_ORE,
+
+			Blocks.IRON_ORE,
+			Blocks.DEEPSLATE_IRON_ORE,
+
+			Blocks.GOLD_ORE,
+			Blocks.DEEPSLATE_GOLD_ORE,
+			Blocks.NETHER_GOLD_ORE,
+
+			Blocks.COPPER_ORE,
+			Blocks.DEEPSLATE_COPPER_ORE,
+
+			Blocks.COAL_ORE,
+			Blocks.DEEPSLATE_COAL_ORE,
+
+			Blocks.EMERALD_ORE,
+			Blocks.DEEPSLATE_EMERALD_ORE,
+
+			Blocks.LAPIS_ORE,
+			Blocks.DEEPSLATE_LAPIS_ORE,
+
+			Blocks.NETHER_QUARTZ_ORE
+		);
+	}
+
+	@Override
 	@SubscribeEvent
-	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	protected void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
@@ -158,7 +150,7 @@ public class Valuables extends TogglableModule {
 		Draw draw = Draw.prepare(event);
 
 		for (Block block : this.handledBlocks) {
-			Integer color = Valuables.blockColors.get(block);
+			Integer color = this.getColor(block);
 			if (color == null) continue;
 			ModConfigSpec.BooleanValue shouldDraw = blockConfigs.get(block);
 			if (shouldDraw == null || !shouldDraw.getAsBoolean()) continue;
@@ -170,6 +162,10 @@ public class Valuables extends TogglableModule {
 				draw.drawOutlineBox(pos, color, alpha);
 			}
 		}
+	}
+
+	protected Integer getColor(Block block) {
+		return Valuables.blockColors.get(block);
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(

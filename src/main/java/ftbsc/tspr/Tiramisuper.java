@@ -14,7 +14,8 @@ import com.mojang.logging.LogUtils;
 
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.command.BaseCommand;
-import ftbsc.tspr.helpers.Scheduler;
+import ftbsc.tspr.services.Scanner;
+import ftbsc.tspr.services.Scheduler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
@@ -42,9 +43,12 @@ import ftbsc.tspr.api.module.TogglableModule;
 
 @Mod(value = Tiramisuper.MODID, dist = Dist.CLIENT)
 public class Tiramisuper {
+	private static Tiramisuper INSTANCE;
+
 	public static final String MODID = "tspr";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Scheduler SCHEDULER = new Scheduler();
+	public static final Scanner SCANNER = new Scanner();
 
 	private final List<BaseModule> modules = new ArrayList<>();
 	private final List<BaseCommand> commands = new ArrayList<>();
@@ -58,10 +62,9 @@ public class Tiramisuper {
 	);
 
 	private final ModContainer modContainer;
-	private final CommandDispatcher<CommandSourceStack> dispatcher;
 	private final ModConfigSpec spec;
 
-	private static Tiramisuper INSTANCE;
+	private final CommandDispatcher<CommandSourceStack> dispatcher;
 
 	public static final Minecraft mc() {
 		return Minecraft.getInstance();
@@ -94,6 +97,7 @@ public class Tiramisuper {
 
 		NeoForge.EVENT_BUS.register(this);
 		NeoForge.EVENT_BUS.register(Tiramisuper.SCHEDULER);
+		NeoForge.EVENT_BUS.register(Tiramisuper.SCANNER);
 
 		for (BaseModule mod : this.modules) {
 			NeoForge.EVENT_BUS.register(mod);

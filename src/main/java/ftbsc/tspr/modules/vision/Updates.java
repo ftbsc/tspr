@@ -61,7 +61,7 @@ public class Updates extends TogglableModule {
 
 		for (Tuple<BlockPos, Long> entry : this.updates) {
 			float alpha = this.getAlpha((float) this.alpha.getAsDouble(), entry.getB(), System.currentTimeMillis(), this.duration.get());
-			draw.drawOutlineBox(entry.getA(), this.color.get().getColor(), alpha);
+			draw.drawOutlineFilledBox(entry.getA(), this.color.get().getColor(), alpha, alpha / 2.f);
 		}
 	}
 

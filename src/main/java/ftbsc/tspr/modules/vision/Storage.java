@@ -10,6 +10,8 @@ import ftbsc.tspr.api.module.ScannerModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 @AutoService(ILoadable.class)
@@ -90,4 +92,9 @@ public class Storage extends ScannerModule {
 		Map.entry(Blocks.RED_SHULKER_BOX, ChatFormatting.DARK_AQUA.getColor()),
 		Map.entry(Blocks.BLACK_SHULKER_BOX, ChatFormatting.DARK_AQUA.getColor())
 	);
+
+	@SubscribeEvent
+	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+		this.doRender(event);
+	}
 }

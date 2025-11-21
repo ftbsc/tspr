@@ -7,7 +7,6 @@ import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.helpers.Draw;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -40,8 +39,7 @@ public abstract class ScannerModule extends TogglableModule {
 		super.prepareConfig(builder);
 	}
 
-	@SubscribeEvent
-	protected void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	protected void doRender(RenderLevelStageEvent.AfterEntities event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}

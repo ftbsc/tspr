@@ -10,6 +10,8 @@ import ftbsc.tspr.api.module.ScannerModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 @AutoService(ILoadable.class)
@@ -32,4 +34,9 @@ public class Portals extends ScannerModule {
 		Map.entry(Blocks.NETHER_PORTAL, ChatFormatting.DARK_PURPLE.getColor()),
 		Map.entry(Blocks.END_PORTAL, ChatFormatting.DARK_AQUA.getColor())
 	);
+
+	@SubscribeEvent
+	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+		this.doRender(event);
+	}
 }

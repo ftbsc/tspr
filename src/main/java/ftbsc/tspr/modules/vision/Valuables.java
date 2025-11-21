@@ -137,9 +137,8 @@ public class Valuables extends ScannerModule {
 		);
 	}
 
-	@Override
 	@SubscribeEvent
-	protected void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}

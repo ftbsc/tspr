@@ -1,13 +1,12 @@
 package ftbsc.tspr.services;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
 
 import ftbsc.tspr.asm.events.PacketEvent;
 import net.minecraft.core.BlockPos;
@@ -15,39 +14,57 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-
-import static ftbsc.tspr.Tiramisuper.mc;
 
 public final class Scanner {
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	public void onLoad(Block block, BiConsumer<BlockPos, BlockState> cb) {
-		Set<BiConsumer<BlockPos, BlockState>> funcs = this.loadSubscribers.get(block);
-		if (funcs == null) {
-			funcs = new HashSet<>();
+	// register a block to be watched on chunk loads
+	public void watch(Block block) {
+		this.watched.add(block);
+	}
+
+	public Iterable<BlockPos> getAll(Block block) {
+		Set<BlockPos> positions = this.blockToPos.get(block);
+		return positions == null ? ConcurrentHashMap.newKeySet() : positions;
+	}
+
+	public @Nullable Block get(BlockPos pos) {
+		return this.posToBlock.get(pos);
+	}
+
+	private final Set<Block> watched = ConcurrentHashMap.newKeySet();
+	private final Map<BlockPos, Block> posToBlock = new ConcurrentHashMap<>();
+	private final Map<Block, Set<BlockPos>> blockToPos = new ConcurrentHashMap<>();
+
+	private void processAdd(BlockPos pos, Block block) {
+		if (this.watched.contains(block)) {
+			this.posToBlock.put(pos, block);
+			this.blockToPos.putIfAbsent(block, ConcurrentHashMap.newKeySet());
+			this.blockToPos.compute(block, (k, positions) -> {
+				positions.add(pos);
+				return positions;
+			});
 		}
-		funcs.add(cb);
-		this.loadSubscribers.put(block, funcs);
 	}
 
-	public void onUnload(Consumer<ChunkPos> cb) {
-		this.unloadSubscribers.add(cb);
+	private void processRemoval(BlockPos pos) {
+		Block changed = this.posToBlock.remove(pos);
+		if (changed != null) {
+			this.blockToPos.computeIfPresent(changed, (k, positions) -> {
+				positions.remove(pos);
+				return positions;
+			});
+		}
 	}
 
-	private final Map<Block, Set<BiConsumer<BlockPos, BlockState>>> loadSubscribers = new ConcurrentHashMap<>();
-	private final Set<Consumer<ChunkPos>> unloadSubscribers = ConcurrentHashMap.newKeySet();
-
-	private void runCallbacks(BlockPos pos, BlockState state) {
-		var callbacks = this.loadSubscribers.get(state.getBlock());
-		if (callbacks != null) {
-			for (var fun : callbacks) {
-				mc().execute(() -> fun.accept(pos, state));
-			}
+	private void processChange(BlockPos pos, Block block) {
+		this.processRemoval(pos);
+		if (this.watched.contains(block)) {
+			this.processAdd(pos, block);
 		}
 	}
 
@@ -55,14 +72,14 @@ public final class Scanner {
 	void onChunkLoaded(ChunkEvent.Load event) {
 		this.executor.submit(() -> {
 			LevelChunk chunk = event.getChunk();
-			ChunkPos pos = chunk.getPos();
+			ChunkPos chunkPos = chunk.getPos();
 
 			for (int x = 0; x < 16; x++) {
 				for (int y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
 					for (int z = 0; z < 16; z++) {
-						BlockPos absPos = pos.getBlockAt(x, y, z);
-						BlockState state = chunk.getBlockState(absPos);
-						this.runCallbacks(absPos, state);
+						BlockPos pos = chunkPos.getBlockAt(x, y, z);
+						Block block = chunk.getBlockState(pos).getBlock();
+						this.processAdd(pos, block);
 					}
 				}
 			}
@@ -71,21 +88,25 @@ public final class Scanner {
 
 	@SubscribeEvent
 	public void onPacket(PacketEvent.Incoming event) {
-		if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
-			this.runCallbacks(packet.getPos(), packet.getBlockState());
-		}
+		this.executor.submit(() -> {
+			if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
+				this.processChange(packet.getPos(), packet.getBlockState().getBlock());
+			}
 
-		if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
-			packet.runUpdates((pos, state) -> this.runCallbacks(pos, state));
-		}
+			if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
+				packet.runUpdates((pos, state) -> this.processChange(pos, state.getBlock()));
+			}
+		});
 	}
 
 	@SubscribeEvent
 	void onChunkUnloaded(ChunkEvent.Unload event) {
 		this.executor.submit(() -> {
-			ChunkPos pos = event.getChunk().getPos();
-			for (Consumer<ChunkPos> cb : this.unloadSubscribers) {
-				mc().execute(() -> cb.accept(pos));
+			ChunkPos chunkPos = event.getChunk().getPos();
+			for (BlockPos pos : this.posToBlock.keySet()) {
+				if (chunkPos.contains(pos)) {
+					this.processRemoval(pos);
+				}
 			}
 		});
 	}

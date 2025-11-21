@@ -1,8 +1,8 @@
 package ftbsc.tspr.modules.vision;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.auto.service.AutoService;
 
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class Storage extends TogglableModule {
 	private ModConfigSpec.DoubleValue alpha;
 
-	private Block[] handledBlocks = {
+	private List<Block> handledBlocks = Arrays.asList(
 		Blocks.CHEST,
 		Blocks.TRAPPED_CHEST,
 		Blocks.BARREL,
@@ -53,20 +53,13 @@ public class Storage extends TogglableModule {
 		Blocks.BROWN_SHULKER_BOX,
 		Blocks.GREEN_SHULKER_BOX,
 		Blocks.RED_SHULKER_BOX,
-		Blocks.BLACK_SHULKER_BOX,
-	};
+		Blocks.BLACK_SHULKER_BOX
+	);
 
 	public Storage() {
 		for (Block block : this.handledBlocks) {
-			Tiramisuper.SCANNER.onLoad(block, (pos, state) -> this.states.put(pos, state.getBlock()));
+			Tiramisuper.SCANNER.watch(block);
 		}
-		Tiramisuper.SCANNER.onUnload((pos) -> {
-			for (BlockPos key : this.states.keySet()) {
-				if (pos.contains(key)) {
-					this.states.remove(key);
-				}
-			}
-		});
 	}
 
 	public void config(ModConfigSpec.Builder builder) {
@@ -75,21 +68,22 @@ public class Storage extends TogglableModule {
 			.defineInRange("alpha", .25, 0., 1.);
 	}
 
-	private ConcurrentHashMap<BlockPos, Block> states = new ConcurrentHashMap<>();
-
 	@SubscribeEvent
 	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
 
+		float alpha = (float) this.alpha.getAsDouble();
+
 		Draw draw = Draw.prepare(event);
 
-		for (Entry<BlockPos, Block> entry : this.states.entrySet()) {
-			Integer color = Storage.blockColors.get(entry.getValue());
+		for (Block block : this.handledBlocks) {
+			Integer color = Storage.blockColors.get(block);
 			if (color == null) continue;
-			float alpha = (float) this.alpha.getAsDouble();
-			draw.drawFilledBox(entry.getKey(), color, alpha);
+			for (BlockPos pos : Tiramisuper.SCANNER.getAll(block)) {
+				draw.drawFilledBox(pos, color, alpha);
+			}
 		}
 	}
 

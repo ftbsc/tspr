@@ -1,8 +1,8 @@
 package ftbsc.tspr.modules.vision;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.auto.service.AutoService;
 
@@ -12,11 +12,14 @@ import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.helpers.Draw;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
 public class Valuables extends TogglableModule {
@@ -32,9 +35,10 @@ public class Valuables extends TogglableModule {
 	private ModConfigSpec.BooleanValue emerald;
 	private ModConfigSpec.BooleanValue lapis;
 	private ModConfigSpec.BooleanValue quartz;
+	private ModConfigSpec.DoubleValue distance;
 	private Map<Block, ModConfigSpec.BooleanValue> blockConfigs;
 
-	private Block[] handledBlocks = {
+	private List<Block> handledBlocks = Arrays.asList(
 		Blocks.ANCIENT_DEBRIS,
 
 		Blocks.DIAMOND_ORE,
@@ -62,20 +66,13 @@ public class Valuables extends TogglableModule {
 		Blocks.LAPIS_ORE,
 		Blocks.DEEPSLATE_LAPIS_ORE,
 
-		Blocks.NETHER_QUARTZ_ORE,
-	};
+		Blocks.NETHER_QUARTZ_ORE
+	);
 
 	public Valuables() {
 		for (Block block : this.handledBlocks) {
-			Tiramisuper.SCANNER.onLoad(block, (pos, state) -> this.states.put(pos, state.getBlock()));
+			Tiramisuper.SCANNER.watch(block);
 		}
-		Tiramisuper.SCANNER.onUnload((pos) -> {
-			for (BlockPos key : this.states.keySet()) {
-				if (pos.contains(key)) {
-					this.states.remove(key);
-				}
-			}
-		});
 	}
 
 	public void config(ModConfigSpec.Builder builder) {
@@ -112,7 +109,11 @@ public class Valuables extends TogglableModule {
 		this.quartz = builder
 			.comment("show Quartz ores")
 			.define("quartz", false);
+		this.distance = builder
+			.comment("max distance from player for rendering")
+			.defineInRange("distance", 20., 0., Double.MAX_VALUE);
 
+		// TODO jank having it here but whatever...
 		this.blockConfigs = Map.ofEntries(
 			Map.entry(Blocks.ANCIENT_DEBRIS, this.ancientDebris),
 
@@ -145,23 +146,29 @@ public class Valuables extends TogglableModule {
 		);
 	}
 
-	private ConcurrentHashMap<BlockPos, Block> states = new ConcurrentHashMap<>();
-
 	@SubscribeEvent
 	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
 
+		double maxDist = Mth.square(this.distance.getAsDouble());
+		float alpha = (float) this.alpha.getAsDouble();
+
 		Draw draw = Draw.prepare(event);
 
-		for (Entry<BlockPos, Block> entry : this.states.entrySet()) {
-			Integer color = Valuables.blockColors.get(entry.getValue());
+		for (Block block : this.handledBlocks) {
+			Integer color = Valuables.blockColors.get(block);
 			if (color == null) continue;
-			ModConfigSpec.BooleanValue shouldDraw = blockConfigs.get(entry.getValue());
+			ModConfigSpec.BooleanValue shouldDraw = blockConfigs.get(block);
 			if (shouldDraw == null || !shouldDraw.getAsBoolean()) continue;
-			float alpha = (float) this.alpha.getAsDouble();
-			draw.drawOutlineBox(entry.getKey(), color, alpha);
+
+			for (BlockPos pos : Tiramisuper.SCANNER.getAll(block)) {
+				if (mc().player.distanceToSqr((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()) > maxDist) {
+					continue;
+				}
+				draw.drawOutlineBox(pos, color, alpha);
+			}
 		}
 	}
 

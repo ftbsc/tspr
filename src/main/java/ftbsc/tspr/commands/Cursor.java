@@ -16,6 +16,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class Cursor extends BaseCommand {
 
@@ -24,18 +26,18 @@ public class Cursor extends BaseCommand {
 			.then(
 				Commands.literal("info")
 					.executes(ctx -> {
-						Vec3 vec = MC.hitResult.getLocation();
+						Vec3 vec = mc().hitResult.getLocation();
 						BlockPos pos = new BlockPos(Mth.floor(vec.x), Mth.floor(vec.y), Mth.floor(vec.z));
-						switch (MC.hitResult.getType()) {
+						switch (mc().hitResult.getType()) {
 							case BLOCK:
 								// TODO blocks on the floor don't work because it uses the block just above
-								BlockState state = MC.level.getBlockState(pos);
+								BlockState state = mc().level.getBlockState(pos);
 								Chat.message("Block @ %s: %s", pos.toString(), state.toString());
 								return 1;
 							case ENTITY:
 								double dist = Double.MAX_VALUE;
 								Entity closest = null;
-								for (Entity e : MC.level.entitiesForRendering()) {
+								for (Entity e : mc().level.entitiesForRendering()) {
 									double currDist = e.distanceToSqr(vec);
 									if (currDist < dist) {
 										closest = e;

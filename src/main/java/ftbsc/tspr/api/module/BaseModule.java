@@ -1,10 +1,9 @@
 package ftbsc.tspr.api.module;
 
-import ftbsc.tspr.api.IGlobals;
 import ftbsc.tspr.api.ILoadable;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public abstract class BaseModule implements IGlobals, ILoadable {
+public abstract class BaseModule implements ILoadable {
 
 	/**
 	 * define config arguments inside here, will be scoped automatically

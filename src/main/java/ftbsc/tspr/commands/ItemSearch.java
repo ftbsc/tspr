@@ -15,6 +15,8 @@ import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class ItemSearch extends BaseCommand {
 
@@ -26,7 +28,7 @@ public class ItemSearch extends BaseCommand {
 			// .then(
 			// 	Commands.literal("damage")
 			// 		.executes(ctx -> {
-			// 			Slot slot = Inventory.hotbar(MC.player).get(MC.player.getInventory().getSelectedSlot());
+			// 			Slot slot = Inventory.hotbar(mc().player).get(mc().player.getInventory().getSelectedSlot());
 			// 			if (!slot.hasItem()) return 0;
 			// 			Chat.message(
 			// 				"A %.1f | S %.1f | DPS %.2f",
@@ -61,7 +63,7 @@ public class ItemSearch extends BaseCommand {
 					)
 			)
 			.executes(ctx -> {
-				ItemStack item = MC.player.getInventory().getSelectedItem();
+				ItemStack item = mc().player.getInventory().getSelectedItem();
 				Chat.message(item.toString());
 				return 1;
 			});

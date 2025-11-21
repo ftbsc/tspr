@@ -13,13 +13,13 @@ import ftbsc.tspr.api.module.TogglableModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.util.ARGB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
 public class ActiveModules extends HudModule {
@@ -66,13 +66,13 @@ public class ActiveModules extends HudModule {
 			int y = this.mod.getY();
 			for (String row : this.mod.modList) {
 				gui.drawString(
-					MC.font,
+					mc().font,
 					this.mod.prefixed(row),
 					this.mod.getX(),
 					y,
 					ARGB.opaque(this.mod.color.get().getColor())
 				);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 			gui.pose().popMatrix();
 		}

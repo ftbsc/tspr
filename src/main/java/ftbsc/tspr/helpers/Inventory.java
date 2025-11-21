@@ -1,5 +1,6 @@
 package ftbsc.tspr.helpers;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -12,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import ftbsc.tspr.api.IGlobals;
+import ftbsc.tspr.Tiramisuper;
 
-public class Inventory implements IGlobals {
+public class Inventory {
 
 	public static final int HOTBAR_SIZE = 9;
 	public static final int HOTBAR_START = 36;
@@ -32,9 +33,9 @@ public class Inventory implements IGlobals {
 
 		});
 		if (attackDamage.size() > 1) {
-			LOGGER.warn("item has multiple attack speeds?");
+			Tiramisuper.LOGGER.warn("item has multiple attack speeds?");
 		} else if (attackDamage.isEmpty()) {
-			LOGGER.error("could not find attack speed attribute for item");
+			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
 			return 0.1;
 		}
 		return attackDamage.getFirst();
@@ -49,9 +50,9 @@ public class Inventory implements IGlobals {
 
 		});
 		if (attackSpeed.size() > 1) {
-			LOGGER.warn("item has multiple attack speeds?");
+			Tiramisuper.LOGGER.warn("item has multiple attack speeds?");
 		} else if (attackSpeed.isEmpty()) {
-			LOGGER.error("could not find attack speed attribute for item");
+			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
 			return 0.1;
 		}
 		return attackSpeed.getFirst();
@@ -74,7 +75,7 @@ public class Inventory implements IGlobals {
 	public static void clickSlot(int container, int slot_index, ClickType click) { clickSlot(container, slot_index, 0, click); }
 
 	public static void clickSlot(int container, int slot_index, int button, ClickType click) {
-		MC.gameMode.handleInventoryMouseClick(container, slot_index, button, click, MC.player);
+		Minecraft.getInstance().gameMode.handleInventoryMouseClick(container, slot_index, button, click, Minecraft.getInstance().player);
 	}
 
 	public static boolean matchItem(Pattern pattern, ItemStack stack) {

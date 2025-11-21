@@ -63,6 +63,10 @@ public class Tiramisuper {
 
 	private static Tiramisuper INSTANCE;
 
+	public static final Minecraft mc() {
+		return Minecraft.getInstance();
+	}
+
 	public Tiramisuper(IEventBus modEventBus, ModContainer modContainer) {
 		Tiramisuper.INSTANCE = this;
 		this.modContainer = modContainer;

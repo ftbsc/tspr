@@ -6,13 +6,12 @@ import java.util.List;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import ftbsc.tspr.api.IGlobals;
 import ftbsc.tspr.api.ILoadable;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-public abstract class BaseCommand implements IGlobals, ILoadable {
+public abstract class BaseCommand implements ILoadable {
 
 	public String getName() {
 		return this.getClass().getSimpleName();

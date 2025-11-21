@@ -17,6 +17,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.server.command.EnumArgument;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class DebugActions extends BaseCommand {
 
@@ -32,7 +34,7 @@ public class DebugActions extends BaseCommand {
 					.then(
 						Commands.literal("network")
 							.executes(ctx -> {
-								MC.getDebugOverlay().toggleNetworkCharts();
+								mc().getDebugOverlay().toggleNetworkCharts();
 								Chat.message("toggled debug overlay network chart");
 								return 0;
 							})
@@ -40,7 +42,7 @@ public class DebugActions extends BaseCommand {
 					.then(
 						Commands.literal("fps")
 							.executes(ctx -> {
-								MC.getDebugOverlay().toggleFpsCharts();
+								mc().getDebugOverlay().toggleFpsCharts();
 								Chat.message("toggled debug overlay fps chart");
 								return 0;
 							})
@@ -48,7 +50,7 @@ public class DebugActions extends BaseCommand {
 					.then(
 						Commands.literal("profiler")
 							.executes(ctx -> {
-								MC.getDebugOverlay().toggleProfilerChart();
+								mc().getDebugOverlay().toggleProfilerChart();
 								Chat.message("toggled debug overlay profiler chart");
 								return 0;
 							})
@@ -61,7 +63,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("reloadchunks")
 					.executes(ctx -> {
-						MC.levelRenderer.allChanged();
+						mc().levelRenderer.allChanged();
 						Chat.message("reloading chunks");
 						return 0;
 					})
@@ -69,7 +71,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("hitboxes")
 					.executes(ctx -> {
-						boolean flag = MC.debugEntries.toggleStatus(DebugScreenEntries.ENTITY_HITBOXES);
+						boolean flag = mc().debugEntries.toggleStatus(DebugScreenEntries.ENTITY_HITBOXES);
 						Chat.message("entity hitboxes %s", flag ? "enabled" : "disabled");
 						return 0;
 					})
@@ -77,8 +79,8 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("clearmessages")
 					.executes(ctx -> {
-						if (MC.gui != null) {
-							MC.gui.getChat().clearMessages(false);
+						if (mc().gui != null) {
+							mc().gui.getChat().clearMessages(false);
 							Chat.message("cleared chat messages");
 							return 0;
 						}
@@ -92,10 +94,10 @@ public class DebugActions extends BaseCommand {
 							.executes(ctx -> {
 								RenderDistanceAction action = ctx.getArgument("action", RenderDistanceAction.class);
 								int new_distance = Mth.clamp(
-									MC.options.renderDistance().get() + (action == RenderDistanceAction.INCREASE ? +1 : -1),
+									mc().options.renderDistance().get() + (action == RenderDistanceAction.INCREASE ? +1 : -1),
 									Options.RENDER_DISTANCE_SHORT, Options.RENDER_DISTANCE_REALLY_FAR
 								);
-								MC.options.renderDistance().set(new_distance);
+								mc().options.renderDistance().set(new_distance);
 								Chat.message("set render distance to %d", new_distance);
 								return 0;
 							})
@@ -107,7 +109,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("boundaries")
 					.executes(ctx -> {
-						boolean flag1 = MC.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_BORDERS);
+						boolean flag1 = mc().debugEntries.toggleStatus(DebugScreenEntries.CHUNK_BORDERS);
 						Chat.message("chunk boundaries %s", flag1 ? "enabled" : "disabled");
 						return 0;
 					})
@@ -115,8 +117,8 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("tooltips")
 					.executes(ctx -> {
-						MC.options.advancedItemTooltips = !MC.options.advancedItemTooltips;
-						MC.options.save();
+						mc().options.advancedItemTooltips = !mc().options.advancedItemTooltips;
+						mc().options.save();
 						Chat.message("toggled advanced item tooltips");
 						return 0;
 					})
@@ -124,7 +126,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("reloadresources")
 					.executes(ctx -> {
-						MC.reloadResourcePacks();
+						mc().reloadResourcePacks();
 						Chat.message("reloaded resource pack");
 						return 0;
 					})
@@ -132,14 +134,14 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("gamemode")
 					.executes(ctx -> {
-						MC.setScreen(new GameModeSwitcherScreen());
+						mc().setScreen(new GameModeSwitcherScreen());
 						return 0;
 					})
 			)
 			.then(
 				Commands.literal("screen")
 					.executes(ctx -> {
-						MC.setScreen(new DebugOptionsScreen());
+						mc().setScreen(new DebugOptionsScreen());
 						return 0;
 					})
 			)

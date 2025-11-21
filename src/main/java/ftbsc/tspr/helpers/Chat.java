@@ -1,11 +1,11 @@
 package ftbsc.tspr.helpers;
 
-import ftbsc.tspr.api.IGlobals;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
-public class Chat implements IGlobals {
+public class Chat {
 	public static void message(String msg, Object... args) {
 		Chat.message(Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY), msg, args);
 	}
@@ -19,7 +19,7 @@ public class Chat implements IGlobals {
 	}
 
 	public static void message(Style style, String msg, Object... args) {
-		MC.gui.getChat().addMessage(
+		Minecraft.getInstance().gui.getChat().addMessage(
 			Component.literal("")
 				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
 				.append(Component.literal(" >> ").withColor(0xBF616A))

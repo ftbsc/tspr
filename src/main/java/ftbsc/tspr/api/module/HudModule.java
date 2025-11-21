@@ -7,6 +7,8 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 public abstract class HudModule extends TogglableModule {
 
 	public abstract GuiLayer getLayer();
@@ -62,13 +64,13 @@ public abstract class HudModule extends TogglableModule {
 			case BOTTOMCENTER:
 			case MIDDLECENTER:
 			case TOPCENTER:
-				x = (MC.getWindow().getGuiScaledWidth() / 2) + x - (width / 2);
+				x = (mc().getWindow().getGuiScaledWidth() / 2) + x - (width / 2);
 				break;
 
 			case TOPRIGHT:
 			case MIDDLERIGHT:
 			case BOTTOMRIGHT:
-				x = MC.getWindow().getGuiScaledWidth() - x - width;
+				x = mc().getWindow().getGuiScaledWidth() - x - width;
 				break;
 		}
 
@@ -88,13 +90,13 @@ public abstract class HudModule extends TogglableModule {
 			case MIDDLELEFT:
 			case MIDDLECENTER:
 			case MIDDLERIGHT:
-				y = (MC.getWindow().getGuiScaledHeight() / 2) + y - (height / 2);
+				y = (mc().getWindow().getGuiScaledHeight() / 2) + y - (height / 2);
 				break;
 
 			case BOTTOMLEFT:
 			case BOTTOMCENTER:
 			case BOTTOMRIGHT:
-				y = MC.getWindow().getGuiScaledHeight() - y - height;
+				y = mc().getWindow().getGuiScaledHeight() - y - height;
 				break;
 		}
 
@@ -158,6 +160,6 @@ public abstract class HudModule extends TogglableModule {
 	}
 
 	protected boolean shouldHide() {
-		return !this.enabled.getAsBoolean() || MC.getDebugOverlay().showDebugScreen() || MC.options.hideGui;
+		return !this.enabled.getAsBoolean() || mc().getDebugOverlay().showDebugScreen() || mc().options.hideGui;
 	}
 }

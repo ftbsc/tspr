@@ -5,9 +5,12 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
 
 import com.google.auto.service.AutoService;
+
+import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
 public class AutoClick extends TogglableModule {
@@ -28,7 +31,7 @@ public class AutoClick extends TogglableModule {
 
 	@SubscribeEvent
 	void onTick(ClientTickEvent.Pre event) {
-		if (!this.enabled.getAsBoolean() || MC.player == null) {
+		if (!this.enabled.getAsBoolean() || mc().player == null) {
 			this.counter = this.interval.getAsInt();
 			return;
 		}
@@ -39,11 +42,11 @@ public class AutoClick extends TogglableModule {
 
 		if (this.counter == 0) {
 			if (this.attack.getAsBoolean()) {
-				MC.options.keyAttack.setDown(true);
-				SCHEDULER.schedule(1, () -> MC.options.keyAttack.setDown(false));
+				mc().options.keyAttack.setDown(true);
+				Tiramisuper.SCHEDULER.schedule(1, () -> mc().options.keyAttack.setDown(false));
 			} else {
-				MC.options.keyUse.setDown(true);
-				SCHEDULER.schedule(1, () -> MC.options.keyUse.setDown(false));
+				mc().options.keyUse.setDown(true);
+				Tiramisuper.SCHEDULER.schedule(1, () -> mc().options.keyUse.setDown(false));
 			}
 			this.counter = this.interval.getAsInt();
 		}

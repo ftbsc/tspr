@@ -13,6 +13,8 @@ import ftbsc.tspr.api.ILoadable;
 
 import com.google.auto.service.AutoService;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class AutoDisconnect extends TogglableModule {
 
@@ -28,13 +30,13 @@ public class AutoDisconnect extends TogglableModule {
 	@SubscribeEvent
 	void onHealthChange(ClientTickEvent.Pre event) {
 		if (!this.enabled.getAsBoolean()) return;
-		if (MC.player == null) return;
+		if (mc().player == null) return;
 
 
-		if (MC.player.getHealth() <= this.threshold.getAsDouble()) {
+		if (mc().player.getHealth() <= this.threshold.getAsDouble()) {
 			String reason = String.format("Health dropped below %.1f hearths", this.threshold.getAsDouble());
-			MC.level.disconnect(Component.literal(reason));
-			MC.disconnect(new AutoDisconnectScreen(reason), true);
+			mc().level.disconnect(Component.literal(reason));
+			mc().disconnect(new AutoDisconnectScreen(reason), true);
 			this.enabled.set(false);
 		}
 	}

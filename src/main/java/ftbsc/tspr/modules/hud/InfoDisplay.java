@@ -13,7 +13,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.util.ARGB;
@@ -22,6 +21,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
 public class InfoDisplay extends HudModule {
@@ -95,11 +96,11 @@ public class InfoDisplay extends HudModule {
 	@SubscribeEvent
 	public void onTick(ClientTickEvent.Post event) {
 		if (!this.speed.get()) return;
-		if (MC.player != null) {
-			this.instant_speed = this.last_position.distanceTo(MC.player.position());
-			this.last_position = MC.player.position();
-			PlayerInfo info = MC.getConnection().getPlayerInfo(
-				MC.player.getGameProfile().id()
+		if (mc().player != null) {
+			this.instant_speed = this.last_position.distanceTo(mc().player.position());
+			this.last_position = mc().player.position();
+			PlayerInfo info = mc().getConnection().getPlayerInfo(
+				mc().player.getGameProfile().id()
 			);
 			if (info != null) { // bungeecord switching makes this null for a second
 				this.instant_ping = info.getLatency();
@@ -185,15 +186,14 @@ public class InfoDisplay extends HudModule {
 				.withStyle(
 					Style.EMPTY
 						.withBold(true)
-						.withColor(0xBF616A)
-						.withShadowColor(0x000000)
-						.withHoverEvent(new HoverEvent.ShowText(Component.literal("Tiramisuper")))
+						.withColor(ARGB.opaque(0xBF616A))
+						.withShadowColor(ARGB.opaque(0x000000))
 				);
 
 
 			if (this.mod.logo.get()) {
-				gui.drawString(MC.font, logo, x, y, color);
-				y = this.mod.inc(y, (MC.font.lineHeight + 1) * 4);
+				gui.drawString(mc().font, logo, x, y, color, true);
+				y = this.mod.inc(y, (mc().font.lineHeight + 1) * 4);
 			}
 
 
@@ -203,39 +203,39 @@ public class InfoDisplay extends HudModule {
 
 			long day = 0;
 			long time = 0;
-			if (MC.level != null) {
-				day = MC.level.dayTime() / 24000L;
-				time = MC.level.dayTime() % 24000L;
+			if (mc().level != null) {
+				day = mc().level.dayTime() / 24000L;
+				time = mc().level.dayTime() % 24000L;
 			}
 
 			if (this.mod.fps.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("fps: %d", MC.getFps()), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("fps: %d", mc().getFps()), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			if (this.mod.ping.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("ping: %d", this.mod.instant_ping), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("ping: %d", this.mod.instant_ping), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			if (this.mod.tps.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("tps: %.1f", this.mod.instant_tps), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("tps: %.1f", this.mod.instant_tps), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			if (this.mod.speed.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			if (this.mod.age.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("age: %d (~%d days)", day, day / (3 * 24)), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("age: %d (~%d days)", day, day / (3 * 24)), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			if (this.mod.time.get()) {
-				gui.drawString(MC.font, this.mod.prefixed("time: %d/%d (%s)", (time / this.mod.TPS), (this.mod.getNextStep(time) / this.mod.TPS), this.mod.getTimePhase(time)), x, y, color);
-				y = this.mod.inc(y, MC.font.lineHeight + 1);
+				gui.drawString(mc().font, this.mod.prefixed("time: %d/%d (%s)", (time / this.mod.TPS), (this.mod.getNextStep(time) / this.mod.TPS), this.mod.getTimePhase(time)), x, y, color);
+				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 
 			gui.pose().popMatrix();

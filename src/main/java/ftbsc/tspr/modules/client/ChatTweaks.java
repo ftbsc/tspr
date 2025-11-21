@@ -15,6 +15,8 @@ import ftbsc.tspr.api.ILoadable;
 
 import com.google.auto.service.AutoService;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class ChatTweaks extends BaseModule {
 
@@ -46,7 +48,7 @@ public class ChatTweaks extends BaseModule {
 	void onChatClear(ChatClearEvent event) {
 		if (this.keepPrevious.getAsBoolean()) {
 			event.setCanceled(true);
-			MC.gui.getChat().addMessage(
+			mc().gui.getChat().addMessage(
 				Component.literal("----------").withStyle(ChatFormatting.DARK_GRAY)
 			);
 		}

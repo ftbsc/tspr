@@ -17,6 +17,8 @@ import com.google.auto.service.AutoService;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 
+import static ftbsc.tspr.Tiramisuper.mc;
+
 @AutoService(ILoadable.class)
 public class Aura extends TogglableModule {
 
@@ -60,36 +62,36 @@ public class Aura extends TogglableModule {
 
 	private void lookAtHidden(EntityAnchorArgument.Anchor anchor, Vec3 target) {
 		// This code comes from vanilla Minecraft, but we send a packet rather than turning player
-		Vec3 vec3 = anchor.apply(MC.player);
+		Vec3 vec3 = anchor.apply(mc().player);
 		double d0 = target.x - vec3.x;
 		double d1 = target.y - vec3.y;
 		double d2 = target.z - vec3.z;
 		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 		float xRot = Mth.wrapDegrees((float)(-(Mth.atan2(d1, d3) * 180.0F / (float)Math.PI)));
 		float yRot = Mth.wrapDegrees((float)(Mth.atan2(d2, d0) * 180.0F / (float)Math.PI) - 90.0F);
-		MC.player.connection.send(new ServerboundMovePlayerPacket.Rot(
-			xRot, yRot, MC.player.onGround(), MC.player.horizontalCollision
+		mc().player.connection.send(new ServerboundMovePlayerPacket.Rot(
+			xRot, yRot, mc().player.onGround(), mc().player.horizontalCollision
 		));
 	}
 
 	@SubscribeEvent
 	public void onTick(ClientTickEvent.Pre event) {
 		if (!this.isEnabled()) return;
-		if (MC.level == null) return;
-		if (MC.player == null) return;
+		if (mc().level == null) return;
+		if (mc().player == null) return;
 
-		if (MC.player.getAttackStrengthScale(0.f) < this.strength.get()) return;
+		if (mc().player.getAttackStrengthScale(0.f) < this.strength.get()) return;
 
 		float distance = Float.MAX_VALUE;
 		Entity target = null;
 		EntityAnchorArgument.Anchor anchor = EntityAnchorArgument.Anchor.EYES;
 
-		for (Entity e : MC.level.entitiesForRendering()) {
+		for (Entity e : mc().level.entitiesForRendering()) {
 			EntityAnchorArgument.Anchor local_anchor = EntityAnchorArgument.Anchor.EYES;
-			if (e.equals(MC.player)) continue;
+			if (e.equals(mc().player)) continue;
 			if (!(e instanceof LivingEntity)) continue;
 			if (!e.isAlive()) continue;
-			if (e.distanceTo(MC.player) > this.reach.get()) continue;
+			if (e.distanceTo(mc().player) > this.reach.get()) continue;
 			if (!this.neutral.get() && e.getClassification(false).isFriendly()) continue;
 			// if (e instanceof PlayerEntity) {
 			// 	PlayerEntity player = (PlayerEntity) e;
@@ -98,16 +100,16 @@ public class Aura extends TogglableModule {
 			// 	}
 			// }
 			if (this.trace.get()) {
-				if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getEyeY() - 0.5)) {
+				if (mc().player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getEyeY() - 0.5)) {
 					local_anchor = EntityAnchorArgument.Anchor.EYES;
-				} else if (MC.player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getY() + 0.5)) {
+				} else if (mc().player.hasLineOfSight(e, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e.getY() + 0.5)) {
 					local_anchor = EntityAnchorArgument.Anchor.FEET;
 				} else {
 					continue;
 				}
 			}
 
-			float dist = MC.player.distanceTo(e);
+			float dist = mc().player.distanceTo(e);
 			if (dist < distance) {
 				anchor = local_anchor;
 				distance = dist;
@@ -118,9 +120,9 @@ public class Aura extends TogglableModule {
 		if (target != null) {
 			switch (this.look.get()) {
 				case ONCE:
-					MC.player.lookAt(anchor, target.getEyePosition(.0F));
-					MC.player.connection.send(new ServerboundMovePlayerPacket.Rot(
-						MC.player.getYRot(), MC.player.getXRot(), MC.player.onGround(), MC.player.horizontalCollision
+					mc().player.lookAt(anchor, target.getEyePosition(.0F));
+					mc().player.connection.send(new ServerboundMovePlayerPacket.Rot(
+						mc().player.getYRot(), mc().player.getXRot(), mc().player.onGround(), mc().player.horizontalCollision
 					));
 					break;
 				case PACKET:
@@ -133,9 +135,9 @@ public class Aura extends TogglableModule {
 			// 	this.autotool.selectBestWeapon();
 			// }
 
-			MC.gameMode.attack(MC.player, target);
+			mc().gameMode.attack(mc().player, target);
 			if (this.swing.get()) {
-				MC.player.swing(InteractionHand.MAIN_HAND);
+				mc().player.swing(InteractionHand.MAIN_HAND);
 			}
 		}
 	}

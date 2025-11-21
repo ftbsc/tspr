@@ -84,14 +84,12 @@ public class Draw {
 	public static final RenderPipeline LINES_NO_DEPTH = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
 		.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
 		.withCull(false)
-		.withoutBlend()
 		.withLocation(ResourceLocation.parse("ftbsc:pipelines/lines_no_depth"))
 		.build();
 
 	public static final RenderPipeline DEBUG_SECTION_QUADS_NO_DEPTH = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
 		.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
 		.withCull(false)
-		.withoutBlend()
 		.withLocation(ResourceLocation.parse("ftbsc:pipeline/debug_section_quads_no_depth"))
 		.build();
 

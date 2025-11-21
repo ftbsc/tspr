@@ -1,4 +1,4 @@
-package ftbsc.tspr.modules.interaction;
+package ftbsc.tspr.modules.player;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -13,7 +13,7 @@ import com.google.auto.service.AutoService;
 import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
-public class AutoClick extends TogglableModule {
+public class Click extends TogglableModule {
 
 	private ModConfigSpec.IntValue interval;
 	private ModConfigSpec.BooleanValue attack;

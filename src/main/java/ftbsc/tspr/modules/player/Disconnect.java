@@ -16,7 +16,7 @@ import com.google.auto.service.AutoService;
 import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
-public class AutoDisconnect extends TogglableModule {
+public class Disconnect extends TogglableModule {
 
 	private ModConfigSpec.DoubleValue threshold;
 

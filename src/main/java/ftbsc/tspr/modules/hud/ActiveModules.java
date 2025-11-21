@@ -42,7 +42,7 @@ public class ActiveModules extends HudModule {
 			.filter(m -> !(m instanceof HudModule))
 			.map(m -> (TogglableModule) m)
 			.filter(m -> m.isEnabled())
-			.map(m -> m.getName())
+			.map(m -> String.format("%s:%s", m.getCategory(), m.getName()))
 			.sorted((a, b) -> Integer.compare(b.length(), a.length()))
 			.collect(Collectors.toList());
 	}

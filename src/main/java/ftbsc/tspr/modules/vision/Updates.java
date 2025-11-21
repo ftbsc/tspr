@@ -20,7 +20,7 @@ import ftbsc.tspr.asm.events.PacketEvent;
 import ftbsc.tspr.helpers.Draw;
 
 @AutoService(ILoadable.class)
-public class BlockUpdates extends TogglableModule {
+public class Updates extends TogglableModule {
 
 	private ModConfigSpec.IntValue duration;
 	private ModConfigSpec.DoubleValue alpha;

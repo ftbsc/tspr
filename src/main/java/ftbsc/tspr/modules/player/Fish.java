@@ -19,7 +19,7 @@ import com.google.auto.service.AutoService;
 import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
-public class AutoFish extends TogglableModule {
+public class Fish extends TogglableModule {
 
 	public ModConfigSpec.BooleanValue recast;
 	public ModConfigSpec.IntValue delay;

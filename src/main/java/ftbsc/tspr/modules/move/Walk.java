@@ -1,4 +1,4 @@
-package ftbsc.tspr.modules.movement;
+package ftbsc.tspr.modules.move;
 
 import ftbsc.tspr.api.module.TogglableModule;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,7 +12,7 @@ import com.google.auto.service.AutoService;
 import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
-public class AutoWalk extends TogglableModule {
+public class Walk extends TogglableModule {
 
 	protected void config(ModConfigSpec.Builder builder) {}
 	private boolean once = false;

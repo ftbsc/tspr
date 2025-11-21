@@ -15,6 +15,7 @@ import ftbsc.tspr.api.command.ConfigArgumentType;
 import ftbsc.tspr.api.module.HudModule.Anchor;
 import ftbsc.tspr.helpers.Chat;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,6 +26,7 @@ public class ConfigCommand extends BaseCommand {
 	@Override
 	public String getName() { return "cfg"; }
 
+	@SuppressWarnings("unchecked")
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(
@@ -64,6 +66,10 @@ public class ConfigCommand extends BaseCommand {
 									case "ftbsc.tspr.api.module.HudModule.Anchor":
 										ModConfigSpec.ConfigValue<Anchor> arg_anchor = (ModConfigSpec.ConfigValue<Anchor>) cfg;
 										arg_anchor.set(Anchor.valueOf(newValue));
+										break;
+									case "net.mincraft.ChatFormatting":
+										ModConfigSpec.ConfigValue<ChatFormatting> arg_fmt = (ModConfigSpec.ConfigValue<ChatFormatting>) cfg;
+										arg_fmt.set(ChatFormatting.valueOf(newValue));
 										break;
 									default:
 										Chat.message("option of type '%s' is not yet settable via command", clazz);

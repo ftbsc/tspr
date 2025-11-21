@@ -3,7 +3,6 @@ package ftbsc.tspr.modules.vision;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 import com.google.auto.service.AutoService;
 
@@ -27,18 +26,47 @@ public class Storage extends TogglableModule {
 		Blocks.CHEST,
 		Blocks.TRAPPED_CHEST,
 		Blocks.BARREL,
-		Blocks.HOPPER,
-		Blocks.DROPPER,
+
 		Blocks.DISPENSER,
-		Blocks.ENDER_CHEST,
+		Blocks.DROPPER,
 		Blocks.FURNACE,
+		Blocks.BLAST_FURNACE,
+		Blocks.SMOKER,
+
+		Blocks.ENDER_CHEST,
+
+		Blocks.HOPPER,
+
+		Blocks.SHULKER_BOX,
+		Blocks.WHITE_SHULKER_BOX,
+		Blocks.ORANGE_SHULKER_BOX,
+		Blocks.MAGENTA_SHULKER_BOX,
+		Blocks.LIGHT_BLUE_SHULKER_BOX,
+		Blocks.YELLOW_SHULKER_BOX,
+		Blocks.LIME_SHULKER_BOX,
+		Blocks.PINK_SHULKER_BOX,
+		Blocks.GRAY_SHULKER_BOX,
+		Blocks.LIGHT_GRAY_SHULKER_BOX,
+		Blocks.CYAN_SHULKER_BOX,
+		Blocks.PURPLE_SHULKER_BOX,
+		Blocks.BLUE_SHULKER_BOX,
+		Blocks.BROWN_SHULKER_BOX,
+		Blocks.GREEN_SHULKER_BOX,
+		Blocks.RED_SHULKER_BOX,
+		Blocks.BLACK_SHULKER_BOX,
 	};
 
 	public Storage() {
 		for (Block block : this.handledBlocks) {
 			Tiramisuper.SCANNER.onLoad(block, (pos, state) -> this.states.put(pos, state.getBlock()));
-			Tiramisuper.SCANNER.onUnload(block, (pos, state) -> this.states.remove(pos));
 		}
+		Tiramisuper.SCANNER.onUnload((pos) -> {
+			for (BlockPos key : this.states.keySet()) {
+				if (pos.contains(key)) {
+					this.states.remove(key);
+				}
+			}
+		});
 	}
 
 	public void config(ModConfigSpec.Builder builder) {

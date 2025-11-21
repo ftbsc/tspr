@@ -173,7 +173,7 @@ public class Valuables extends TogglableModule {
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(
-		Map.entry(Blocks.ANCIENT_DEBRIS, ChatFormatting.GOLD.getColor()),
+		Map.entry(Blocks.ANCIENT_DEBRIS, ChatFormatting.DARK_AQUA.getColor()),
 
 		Map.entry(Blocks.DIAMOND_ORE, ChatFormatting.AQUA.getColor()),
 		Map.entry(Blocks.DEEPSLATE_DIAMOND_ORE, ChatFormatting.AQUA.getColor()),
@@ -188,11 +188,11 @@ public class Valuables extends TogglableModule {
 		Map.entry(Blocks.DEEPSLATE_GOLD_ORE, ChatFormatting.YELLOW.getColor()),
 		Map.entry(Blocks.NETHER_GOLD_ORE, ChatFormatting.YELLOW.getColor()),
 
-		Map.entry(Blocks.COPPER_ORE, ChatFormatting.DARK_RED.getColor()),
-		Map.entry(Blocks.DEEPSLATE_COPPER_ORE, ChatFormatting.DARK_RED.getColor()),
+		Map.entry(Blocks.COPPER_ORE, ChatFormatting.GOLD.getColor()),
+		Map.entry(Blocks.DEEPSLATE_COPPER_ORE, ChatFormatting.GOLD.getColor()),
 
-		Map.entry(Blocks.COAL_ORE, ChatFormatting.DARK_GRAY.getColor()),
-		Map.entry(Blocks.DEEPSLATE_COAL_ORE, ChatFormatting.DARK_GRAY.getColor()),
+		Map.entry(Blocks.COAL_ORE, ChatFormatting.BLACK.getColor()),
+		Map.entry(Blocks.DEEPSLATE_COAL_ORE, ChatFormatting.BLACK.getColor()),
 
 		Map.entry(Blocks.EMERALD_ORE, ChatFormatting.GREEN.getColor()),
 		Map.entry(Blocks.DEEPSLATE_EMERALD_ORE, ChatFormatting.GREEN.getColor()),
@@ -200,6 +200,6 @@ public class Valuables extends TogglableModule {
 		Map.entry(Blocks.LAPIS_ORE, ChatFormatting.BLUE.getColor()),
 		Map.entry(Blocks.DEEPSLATE_LAPIS_ORE, ChatFormatting.BLUE.getColor()),
 
-		Map.entry(Blocks.NETHER_QUARTZ_ORE, ChatFormatting.WHITE.getColor())
+		Map.entry(Blocks.NETHER_QUARTZ_ORE, ChatFormatting.GRAY.getColor())
 	);
 }

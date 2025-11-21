@@ -33,6 +33,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -40,6 +41,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import ftbsc.tspr.api.module.BaseModule;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.helpers.Draw;
 
 @Mod(value = Tiramisuper.MODID, dist = Dist.CLIENT)
 public class Tiramisuper {
@@ -194,6 +196,12 @@ public class Tiramisuper {
 					);
 				}
 			}
+		}
+
+		@SubscribeEvent
+		static void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
+			event.registerPipeline(Draw.LINES_NO_DEPTH);
+			event.registerPipeline(Draw.DEBUG_SECTION_QUADS_NO_DEPTH);
 		}
 	}
 }

@@ -4,17 +4,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 import com.google.auto.service.AutoService;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -22,12 +17,14 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.asm.events.PacketEvent;
+import ftbsc.tspr.helpers.Draw;
 
 @AutoService(ILoadable.class)
 public class BlockUpdates extends TogglableModule {
 
 	private ModConfigSpec.IntValue duration;
 	private ModConfigSpec.DoubleValue alpha;
+	private ModConfigSpec.EnumValue<ChatFormatting> color;
 
 	// TODO allow to customize color
 
@@ -41,6 +38,10 @@ public class BlockUpdates extends TogglableModule {
 		this.alpha = builder
 			.comment("alpha channel value for highlights")
 			.defineInRange("alpha", .75, 0., 1.);
+
+		this.color = builder
+			.comment("color to use for block outlines")
+			.defineEnum("color", ChatFormatting.WHITE);
 	}
 
 
@@ -52,21 +53,15 @@ public class BlockUpdates extends TogglableModule {
 
 	@SubscribeEvent
 	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
-		if (!this.enabled.getAsBoolean() || MC.getDebugOverlay().showDebugScreen()) {
+		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
 
-		PoseStack poseStack = event.getPoseStack();
-		Vec3 camera = event.getLevelRenderState().cameraRenderState.pos;
-		VertexConsumer consumer = MC.renderBuffers().bufferSource().getBuffer(RenderType.lines());
+		Draw draw = Draw.prepare(event);
 
 		for (Tuple<BlockPos, Long> entry : this.updates) {
 			float alpha = this.getAlpha((float) this.alpha.getAsDouble(), entry.getB(), System.currentTimeMillis(), this.duration.get());
-			Vec3 offset = Vec3.atLowerCornerOf(entry.getA()).subtract(camera);
-			poseStack.pushPose();
-			poseStack.translate(offset.x, offset.y, offset.z);
-			ShapeRenderer.renderLineBox(poseStack.last(), consumer, new AABB(0, 0, 0, 1, 1, 1), 1F, 1F, 1F, alpha);
-			poseStack.popPose();
+			draw.drawOutlineBox(entry.getA(), this.color.get().getColor(), alpha);
 		}
 	}
 

@@ -95,7 +95,7 @@ public final class Scanner {
 			}
 
 			if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
-				packet.runUpdates((pos, state) -> this.processChange(pos, state.getBlock()));
+				packet.runUpdates((pos, state) -> this.processChange(new BlockPos(pos), state.getBlock()));
 			}
 		});
 	}

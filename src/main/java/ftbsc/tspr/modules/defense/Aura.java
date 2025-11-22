@@ -7,6 +7,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -93,6 +95,8 @@ public class Aura extends TogglableModule {
 			if (!e.isAlive()) continue;
 			if (e.distanceTo(mc().player) > this.reach.get()) continue;
 			if (!this.neutral.get() && e.getClassification(false).isFriendly()) continue;
+			if (e instanceof Mob m && !m.isAggressive()) continue;
+			if (e instanceof ZombifiedPiglin zp && !zp.isAngry()) continue;
 			// if (e instanceof PlayerEntity) {
 			// 	PlayerEntity player = (PlayerEntity) e;
 			// 	if (Boscovicino.friends().isFriend(player.getGameProfile().getId())) {

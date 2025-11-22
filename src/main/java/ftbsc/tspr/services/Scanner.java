@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 
 public final class Scanner {
 
@@ -109,5 +110,11 @@ public final class Scanner {
 				}
 			}
 		});
+	}
+
+	@SubscribeEvent
+	void onWorldUnload(LevelEvent.Unload event) {
+		this.posToBlock.clear();
+		this.blockToPos.clear();
 	}
 }

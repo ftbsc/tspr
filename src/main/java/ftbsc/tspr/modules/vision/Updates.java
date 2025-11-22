@@ -14,6 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.asm.events.PacketEvent;
@@ -85,5 +86,10 @@ public class Updates extends TogglableModule {
 			ClientboundSectionBlocksUpdatePacket packet = (ClientboundSectionBlocksUpdatePacket) event.packet;
 			packet.runUpdates( (pos, state) -> this.updates.add(new Tuple<>(new BlockPos(pos), System.currentTimeMillis())) );
 		}
+	}
+
+	@SubscribeEvent
+	void onWorldUnload(LevelEvent.Unload event) {
+		this.updates.clear();
 	}
 }

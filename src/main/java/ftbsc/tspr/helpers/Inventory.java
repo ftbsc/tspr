@@ -2,11 +2,14 @@ package ftbsc.tspr.helpers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import ftbsc.tspr.Tiramisuper;
+import static ftbsc.tspr.Tiramisuper.mc;
 
 public class Inventory {
 
@@ -38,6 +42,7 @@ public class Inventory {
 			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
 			return 0.1;
 		}
+
 		return attackDamage.getFirst();
 	}
 
@@ -55,17 +60,25 @@ public class Inventory {
 			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
 			return 0.1;
 		}
+
 		return attackSpeed.getFirst();
 	}
 
 	public static double itemDPS(ItemStack item) {
-		double damage = (double) item.getDamageValue();
+		double damage = Inventory.itemAttachDamage(item);
 		double speed  = Inventory.itemAttackSpeed(item);
 
-		// int sharpness = item.getEnchantmentLevel(Enchantments.SHARPNESS);
-		// if (sharpness > 0) {
-		// 	damage += 0.5 * Math.max(0, sharpness - 1) + 1.;
-		// }
+		// TODO wtf is this disaster .......
+		var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
+		var enchs = item.getAllEnchantments(lookup);
+		var sharp = enchs.keySet().stream().filter(e -> e.getKey().equals(Enchantments.SHARPNESS)).findAny();
+
+		if (sharp.isPresent()) {
+			int sharpness = item.getEnchantmentLevel(sharp.get());
+			if (sharpness > 0) {
+				damage += 0.5 * Math.max(0, sharpness - 1) + 1.;
+			}
+		}
 
 		return damage / (1. + speed);
 	}
@@ -75,7 +88,7 @@ public class Inventory {
 	public static void clickSlot(int container, int slot_index, ClickType click) { clickSlot(container, slot_index, 0, click); }
 
 	public static void clickSlot(int container, int slot_index, int button, ClickType click) {
-		Minecraft.getInstance().gameMode.handleInventoryMouseClick(container, slot_index, button, click, Minecraft.getInstance().player);
+		mc().gameMode.handleInventoryMouseClick(container, slot_index, button, click, Minecraft.getInstance().player);
 	}
 
 	public static boolean matchItem(Pattern pattern, ItemStack stack) {
@@ -84,11 +97,13 @@ public class Inventory {
 		String displayName = stack.getDisplayName().getString();
 		if (pattern.matcher(displayName).find()) return true;
 
-		// if (Items.ENCHANTED_BOOK.equals(stack.getItem()) || stack.isEnchanted()) {
-		// 	for (String ench : itemEnchantments(stack)) {
-		// 		if (pattern.matcher(ench).find()) return true;
-		// 	}
-		// }
+		if (Items.ENCHANTED_BOOK.equals(stack.getItem()) || stack.isEnchanted()) {
+			var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
+			var enchs = stack.getAllEnchantments(lookup);
+			for (Holder<Enchantment> ench : enchs.keySet()) {
+				if (pattern.matcher(ench.getRegisteredName()).find()) return true;
+			}
+		}
 
 		return false;
 	}

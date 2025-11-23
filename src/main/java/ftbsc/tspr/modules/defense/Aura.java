@@ -7,8 +7,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -18,6 +17,7 @@ import com.google.auto.service.AutoService;
 
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.modules.client.PickTool;
 
 import static ftbsc.tspr.Tiramisuper.mc;
 
@@ -33,7 +33,7 @@ public class Aura extends TogglableModule {
 
 	private ModConfigSpec.DoubleValue reach;
 	private ModConfigSpec.DoubleValue strength;
-	// private ModConfigSpec.BooleanValue tool;
+	private ModConfigSpec.BooleanValue tool;
 	private ModConfigSpec.BooleanValue trace;
 	private ModConfigSpec.EnumValue<LookType> look;
 	private ModConfigSpec.BooleanValue swing;
@@ -48,6 +48,9 @@ public class Aura extends TogglableModule {
 			.comment("minimum attack strenght to wait before attacking")
 			.defineInRange("strength", 1., 0., 2.);
 			// TODO what is the real max attack strength?
+		this.tool = builder
+			.comment("trigger pick best weapon before attacking (with auto-tool)")
+			.define("tool", true);
 		this.trace = builder
 			.comment("only attack entities that can be seen (raytraced)")
 			.define("trace", true);
@@ -95,8 +98,7 @@ public class Aura extends TogglableModule {
 			if (!e.isAlive()) continue;
 			if (e.distanceTo(mc().player) > this.reach.get()) continue;
 			if (!this.neutral.get() && e.getClassification(false).isFriendly()) continue;
-			if (e instanceof Mob m && !m.isAggressive()) continue;
-			if (e instanceof ZombifiedPiglin zp && !zp.isAngry()) continue;
+			if (e instanceof NeutralMob zp && !zp.isAngry()) continue;
 			// if (e instanceof PlayerEntity) {
 			// 	PlayerEntity player = (PlayerEntity) e;
 			// 	if (Boscovicino.friends().isFriend(player.getGameProfile().getId())) {
@@ -135,9 +137,9 @@ public class Aura extends TogglableModule {
 				case NONE: break;
 			}
 
-			// if (this.tool.get()) {
-			// 	this.autotool.selectBestWeapon();
-			// }
+			if (this.tool.get()) {
+				PickTool.selectBestWeapon();
+			}
 
 			mc().gameMode.attack(mc().player, target);
 			if (this.swing.get()) {

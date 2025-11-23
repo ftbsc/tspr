@@ -25,32 +25,31 @@ import static ftbsc.tspr.Tiramisuper.mc;
 @AutoService(ILoadable.class)
 public class PickTool extends TogglableModule {
 
-	private ModConfigSpec.IntValue limit;
+	// private ModConfigSpec.IntValue limit;
 	// private ModConfigSpec.BooleanValue prefer_looting;
 
 	public void config(ModConfigSpec.Builder builder) {
-		this.limit = builder
-			.comment("durability limit for tools, set to 0 to destroy them")
-			.defineInRange("limit", 1, 0, Integer.MAX_VALUE);
+		// this.limit = builder
+		// 	.comment("durability limit for tools, set to 0 to destroy them")
+		// 	.defineInRange("limit", 1, 0, Integer.MAX_VALUE);
 
 		// this.prefer_looting = builder
 		// 	.comment("when picking best weapon, prefer looting over slight more DPS")
 		// 	.define("prefer-looting", true);
 	}
 
-	private boolean itemIsTooDamaged(ItemStack item) {
-		return this.limit.get() > 0
-			&& item.getMaxDamage() > 0
-			&& item.getMaxDamage() - item.getDamageValue() <= this.limit.get();
+	public static boolean itemIsTooDamaged(ItemStack item) {
+		return item.getMaxDamage() > 0
+			&& item.getMaxDamage() - item.getDamageValue() <= 3;
 	}
 
-	public boolean selectBestWeapon() {
+	public static boolean selectBestWeapon() {
 		List<Slot> hotbar = Inventory.hotbar(mc().player);
 		int current_slot = mc().player.getInventory().getSelectedSlot();
 		double current_damage = Inventory.itemDPS(hotbar.get(current_slot).getItem());
 		for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
 			ItemStack item = hotbar.get(i).getItem();
-			if (this.itemIsTooDamaged(item)) {
+			if (PickTool.itemIsTooDamaged(item)) {
 				continue;
 			}
 
@@ -74,7 +73,7 @@ public class PickTool extends TogglableModule {
 		return false;
 	}
 
-	public boolean selectBestTool() {
+	public static boolean selectBestTool() {
 		List<Slot> hotbar = Inventory.hotbar(mc().player);
 		int current_slot = mc().player.getInventory().getSelectedSlot();
 		HitResult result = mc().hitResult;
@@ -82,7 +81,7 @@ public class PickTool extends TogglableModule {
 		float current_speed = hotbar.get(current_slot).getItem().getDestroySpeed(state);
 		for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
 			ItemStack item = hotbar.get(i).getItem();
-			if (this.itemIsTooDamaged(item)) {
+			if (PickTool.itemIsTooDamaged(item)) {
 				continue;
 			}
 			float speed = item.getDestroySpeed(state);
@@ -108,10 +107,10 @@ public class PickTool extends TogglableModule {
 		if (event.getButton() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
 		switch (mc().hitResult.getType()) {
 			case BLOCK:
-				selectBestTool();
+				PickTool.selectBestTool();
 				break;
 			case ENTITY:
-				selectBestWeapon();
+				PickTool.selectBestWeapon();
 				break;
 			case MISS:
 				break;

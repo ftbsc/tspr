@@ -37,13 +37,13 @@ public class Inventory {
 
 		});
 		if (attackDamage.size() > 1) {
-			Tiramisuper.LOGGER.warn("item has multiple attack speeds?");
+			Tiramisuper.LOGGER.warn("item has multiple attack speeds? {}", item.getItem().toString());
 		} else if (attackDamage.isEmpty()) {
-			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
-			return 0.1;
+			Tiramisuper.LOGGER.error("could not find attack speed attribute for item: {}", item.getItem().toString());
+			attackDamage.add(0.);
 		}
 
-		return attackDamage.getFirst();
+		return 2. + attackDamage.getFirst();
 	}
 
 	public static double itemAttackSpeed(ItemStack item) {
@@ -55,13 +55,15 @@ public class Inventory {
 
 		});
 		if (attackSpeed.size() > 1) {
-			Tiramisuper.LOGGER.warn("item has multiple attack speeds?");
+			Tiramisuper.LOGGER.warn("item has multiple attack speeds? {}", item.getItem().toString());
 		} else if (attackSpeed.isEmpty()) {
-			Tiramisuper.LOGGER.error("could not find attack speed attribute for item");
-			return 0.1;
+			Tiramisuper.LOGGER.error("could not find attack speed attribute for item: {}", item.getItem().toString());
+			attackSpeed.add(0.);
 		}
 
-		return attackSpeed.getFirst();
+		Tiramisuper.LOGGER.info("base: {},   item: {}", mc().player.getAttributeValue(Attributes.ATTACK_SPEED), attackSpeed.getFirst());
+
+		return 4.0 + attackSpeed.getFirst();
 	}
 
 	public static double itemDPS(ItemStack item) {
@@ -76,11 +78,11 @@ public class Inventory {
 		if (sharp.isPresent()) {
 			int sharpness = item.getEnchantmentLevel(sharp.get());
 			if (sharpness > 0) {
-				damage += 0.5 * Math.max(0, sharpness - 1) + 1.;
+				damage += (0.5 * sharpness) + 0.5;
 			}
 		}
 
-		return damage / (1. + speed);
+		return damage * speed;
 	}
 
 	public static void clickSlot(int slotIndex, ClickType click) { clickSlot(0, slotIndex, 0, click); }

@@ -7,11 +7,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Chat;
+import ftbsc.tspr.helpers.Inventory;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,20 +27,21 @@ public class ItemSearch extends BaseCommand {
 
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
-			// .then(
-			// 	Commands.literal("damage")
-			// 		.executes(ctx -> {
-			// 			Slot slot = Inventory.hotbar(mc().player).get(mc().player.getInventory().getSelectedSlot());
-			// 			if (!slot.hasItem()) return 0;
-			// 			Chat.message(
-			// 				"A %.1f | S %.1f | DPS %.2f",
-			// 				Inventory.itemAttackDamage(slot.getItem()),
-			// 				Inventory.itemAttackSpeed(slot.getItem()),
-			// 				Inventory.itemDPS(slot.getItem())
-			// 			);
-			// 			return 1;
-			// 		})
-			// )
+			.then(
+				Commands.literal("stats")
+					.executes(ctx -> {
+						Slot slot = Inventory.hotbar(mc().player).get(mc().player.getInventory().getSelectedSlot());
+						if (!slot.hasItem()) return 0;
+						Chat.message(
+							"Item %s: A %.1f | S %.1f | DPS %.2f",
+							slot.getItem().getItem().toString(),
+							Inventory.itemAttachDamage(slot.getItem()),
+							Inventory.itemAttackSpeed(slot.getItem()),
+							Inventory.itemDPS(slot.getItem())
+						);
+						return 1;
+					})
+			)
 			.then(
 				Commands.literal("search")
 					.then(

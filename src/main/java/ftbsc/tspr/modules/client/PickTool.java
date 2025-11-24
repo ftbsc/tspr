@@ -6,12 +6,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.helpers.Inventory;
-import ftbsc.tspr.helpers.Position;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -73,11 +74,10 @@ public class PickTool extends TogglableModule {
 		return false;
 	}
 
-	public static boolean selectBestTool() {
+	public static boolean selectBestTool(BlockPos pos) {
 		List<Slot> hotbar = Inventory.hotbar(mc().player);
 		int current_slot = mc().player.getInventory().getSelectedSlot();
-		HitResult result = mc().hitResult;
-		BlockState state = mc().level.getBlockState(Position.clampToBlock(result.getLocation()));
+		BlockState state = mc().level.getBlockState(pos);
 		float current_speed = hotbar.get(current_slot).getItem().getDestroySpeed(state);
 		for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
 			ItemStack item = hotbar.get(i).getItem();
@@ -105,14 +105,13 @@ public class PickTool extends TogglableModule {
 		//  some without putting a dumb time cooldown?;
 		if (event.getAction() == InputConstants.RELEASE) return;
 		if (event.getButton() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
-		switch (mc().hitResult.getType()) {
-			case BLOCK:
-				PickTool.selectBestTool();
+		switch (mc().hitResult) {
+			case BlockHitResult block:
+				PickTool.selectBestTool(block.getBlockPos());
 				break;
-			case ENTITY:
+			case EntityHitResult entity:
 				PickTool.selectBestWeapon();
-				break;
-			case MISS:
+			default:
 				break;
 		}
 	}

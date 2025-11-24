@@ -6,14 +6,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Chat;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 
 import static ftbsc.tspr.Tiramisuper.mc;
@@ -26,28 +26,17 @@ public class Cursor extends BaseCommand {
 			.then(
 				Commands.literal("info")
 					.executes(ctx -> {
-						Vec3 vec = mc().hitResult.getLocation();
-						BlockPos pos = new BlockPos(Mth.floor(vec.x), Mth.floor(vec.y), Mth.floor(vec.z));
-						switch (mc().hitResult.getType()) {
-							case BLOCK:
-								// TODO blocks on the floor don't work because it uses the block just above
+						switch (mc().hitResult) {
+							case BlockHitResult block:
+								BlockPos pos = block.getBlockPos();
 								BlockState state = mc().level.getBlockState(pos);
 								Chat.message("Block @ %s: %s", pos.toString(), state.toString());
 								return 1;
-							case ENTITY:
-								double dist = Double.MAX_VALUE;
-								Entity closest = null;
-								for (Entity e : mc().level.entitiesForRendering()) {
-									double currDist = e.distanceToSqr(vec);
-									if (currDist < dist) {
-										closest = e;
-										dist = currDist;
-									}
-								}
-								Chat.message("Entity %s", closest.toString());
+							case EntityHitResult entity:
+								Vec3 loc = entity.getLocation();
+								Chat.message("Entity @ %s: %s", loc, entity.getEntity());
 								return 1;
 							default:
-							case MISS:
 								Chat.message("nothing under cursor");
 								return 0;
 						}

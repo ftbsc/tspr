@@ -39,7 +39,6 @@ public class Inventory {
 		if (attackDamage.size() > 1) {
 			Tiramisuper.LOGGER.warn("item has multiple attack speeds? {}", item.getItem().toString());
 		} else if (attackDamage.isEmpty()) {
-			Tiramisuper.LOGGER.error("could not find attack speed attribute for item: {}", item.getItem().toString());
 			attackDamage.add(0.);
 		}
 
@@ -57,11 +56,8 @@ public class Inventory {
 		if (attackSpeed.size() > 1) {
 			Tiramisuper.LOGGER.warn("item has multiple attack speeds? {}", item.getItem().toString());
 		} else if (attackSpeed.isEmpty()) {
-			Tiramisuper.LOGGER.error("could not find attack speed attribute for item: {}", item.getItem().toString());
 			attackSpeed.add(0.);
 		}
-
-		Tiramisuper.LOGGER.info("base: {},   item: {}", mc().player.getAttributeValue(Attributes.ATTACK_SPEED), attackSpeed.getFirst());
 
 		return 4.0 + attackSpeed.getFirst();
 	}

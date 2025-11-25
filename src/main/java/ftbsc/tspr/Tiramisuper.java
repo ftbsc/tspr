@@ -115,7 +115,7 @@ public class Tiramisuper {
 	}
 
 	@SubscribeEvent
-	public void onCommandSuggestionsBuilt(RegisterClientCommandsEvent event) {
+	void onCommandSuggestionsBuilt(RegisterClientCommandsEvent event) {
 		for (BaseCommand cmd : this.commands) {
 			LiteralCommandNode<CommandSourceStack> node = cmd.build(event.getBuildContext());
 			this.dispatcher.getRoot().addChild(node);

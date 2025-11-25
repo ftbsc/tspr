@@ -3,6 +3,9 @@ package ftbsc.tspr.api.module;
 import ftbsc.tspr.api.ILoadable;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+/**
+ * A base module, containing configuration and loaded at runtime
+ */
 public abstract class BaseModule implements ILoadable {
 
 	/**
@@ -18,6 +21,9 @@ public abstract class BaseModule implements ILoadable {
 
 
 
+	/**
+	 * Build module configuration on the provided {@link ModConfigSpec.Builder}
+	 */
 	public final void buildConfig(ModConfigSpec.Builder builder) {
 		this.pushConfig(builder);
 		this.prepareConfig(builder);
@@ -34,10 +40,15 @@ public abstract class BaseModule implements ILoadable {
 		builder.pop();
 	}
 
+	/**
+	 * Returns module category (based on its package path)
+	 * @return module category
+	 */
 	public String getCategory() {
 		return this.getClass().getPackageName().replace("ftbsc.tspr.modules.", "");
 	}
 
+	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}

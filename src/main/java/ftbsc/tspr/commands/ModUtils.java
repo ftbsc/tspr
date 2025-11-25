@@ -15,12 +15,16 @@ import net.minecraft.commands.Commands;
 
 import java.util.stream.Collectors;
 
+/**
+ * Command to list or manage modules
+ */
 @AutoService(ILoadable.class)
 public class ModUtils extends BaseCommand {
 
 	@Override
 	public String getName() { return "mods"; }
 
+	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(

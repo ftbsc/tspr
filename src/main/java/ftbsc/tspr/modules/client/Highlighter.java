@@ -24,6 +24,7 @@ public class Highlighter extends TogglableModule {
 	private Pattern pattern;
 	private int counter = 0;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.pattern = Pattern.compile("");
 		this.query = builder

@@ -1,7 +1,9 @@
-package ftbsc.tspr.api.parser;
+package ftbsc.tspr.api.command.parser;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
+
 import org.jetbrains.annotations.Nullable;
+
 
 /**
  * A parser that can turn strings into other types.

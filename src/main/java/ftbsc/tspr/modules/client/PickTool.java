@@ -6,6 +6,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.helpers.Inventory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.world.inventory.Slot;
@@ -29,6 +31,7 @@ public class PickTool extends TogglableModule {
 	// private ModConfigSpec.IntValue limit;
 	// private ModConfigSpec.BooleanValue prefer_looting;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		// this.limit = builder
 		// 	.comment("durability limit for tools, set to 0 to destroy them")
@@ -45,8 +48,11 @@ public class PickTool extends TogglableModule {
 	}
 
 	public static boolean selectBestWeapon() {
-		List<Slot> hotbar = Inventory.hotbar(mc().player);
-		int current_slot = mc().player.getInventory().getSelectedSlot();
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player == null) return false;
+		LocalPlayer player = mc.player;
+		List<Slot> hotbar = Inventory.hotbar(player);
+		int current_slot = player.getInventory().getSelectedSlot();
 		double current_damage = Inventory.itemDPS(hotbar.get(current_slot).getItem());
 		for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
 			ItemStack item = hotbar.get(i).getItem();
@@ -66,18 +72,21 @@ public class PickTool extends TogglableModule {
 				current_damage = damage;
 			}
 		}
-		if (current_slot != mc().player.getInventory().getSelectedSlot()) {
-			mc().player.getInventory().setSelectedSlot(current_slot);
-      mc().getConnection().send(new ServerboundSetCarriedItemPacket(current_slot));
+		if (current_slot != player.getInventory().getSelectedSlot()) {
+			player.getInventory().setSelectedSlot(current_slot);
+      mc.getConnection().send(new ServerboundSetCarriedItemPacket(current_slot));
 			return true;
 		}
 		return false;
 	}
 
 	public static boolean selectBestTool(BlockPos pos) {
-		List<Slot> hotbar = Inventory.hotbar(mc().player);
-		int current_slot = mc().player.getInventory().getSelectedSlot();
-		BlockState state = mc().level.getBlockState(pos);
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player == null) return false;
+		LocalPlayer player = mc.player;
+		List<Slot> hotbar = Inventory.hotbar(player);
+		int current_slot = player.getInventory().getSelectedSlot();
+		BlockState state = mc.level.getBlockState(pos);
 		float current_speed = hotbar.get(current_slot).getItem().getDestroySpeed(state);
 		for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
 			ItemStack item = hotbar.get(i).getItem();
@@ -90,9 +99,9 @@ public class PickTool extends TogglableModule {
 				current_speed = speed;
 			}
 		}
-		if (current_slot != mc().player.getInventory().getSelectedSlot()) {
-			mc().player.getInventory().setSelectedSlot(current_slot);
-      mc().getConnection().send(new ServerboundSetCarriedItemPacket(current_slot));
+		if (current_slot != player.getInventory().getSelectedSlot()) {
+			player.getInventory().setSelectedSlot(current_slot);
+      mc.getConnection().send(new ServerboundSetCarriedItemPacket(current_slot));
 			return true;
 		}
 		return false;
@@ -106,6 +115,8 @@ public class PickTool extends TogglableModule {
 		if (event.getAction() == InputConstants.RELEASE) return;
 		if (event.getButton() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
 		switch (mc().hitResult) {
+			case null:
+				break;
 			case BlockHitResult block:
 				PickTool.selectBestTool(block.getBlockPos());
 				break;

@@ -19,15 +19,28 @@ import java.util.regex.Pattern;
 import ftbsc.tspr.Tiramisuper;
 import static ftbsc.tspr.Tiramisuper.mc;
 
+/**
+ * Utility methods to scan, process and manage player inventory
+ */
 public class Inventory {
 
+	/** number of hotbar slots */
 	public static final int HOTBAR_SIZE = 9;
+	/** start index of hotbar, in inventory slots */
 	public static final int HOTBAR_START = 36;
 
+	/**
+	 * Returns only {@link Slot}s in player hotbar
+	 * @param player local player to get hotbar of
+	 */
 	public static List<Slot> hotbar(LocalPlayer player) {
 		return player.inventoryMenu.slots.subList(HOTBAR_START, HOTBAR_START + HOTBAR_SIZE);
 	}
 
+	/**
+	 * Calculates attach damage for given {@link ItemStack}
+	 * @param item get damage for this item
+	 */
 	public static double itemAttachDamage(ItemStack item) {
 		List<Double> attackDamage = new ArrayList<>();
 		item.getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attr, mod) -> {
@@ -45,6 +58,10 @@ public class Inventory {
 		return 2. + attackDamage.getFirst();
 	}
 
+	/**
+	 * Calculates attach speed for given {@link ItemStack}
+	 * @param item get speed for this item
+	 */
 	public static double itemAttackSpeed(ItemStack item) {
 		List<Double> attackSpeed = new ArrayList<>();
 		item.getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attr, mod) -> {
@@ -62,6 +79,10 @@ public class Inventory {
 		return 4.0 + attackSpeed.getFirst();
 	}
 
+	/**
+	 * Calculates Damage-Per-Second for given {@link ItemStack}
+	 * @param item get dps for this item
+	 */
 	public static double itemDPS(ItemStack item) {
 		double damage = Inventory.itemAttachDamage(item);
 		double speed  = Inventory.itemAttackSpeed(item);

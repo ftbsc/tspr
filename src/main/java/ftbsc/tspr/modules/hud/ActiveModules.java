@@ -26,6 +26,7 @@ public class ActiveModules extends HudModule {
 
 	private ModConfigSpec.EnumValue<ChatFormatting> color;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.color = builder
 			.comment("color for drawing list")
@@ -47,6 +48,7 @@ public class ActiveModules extends HudModule {
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public GuiLayer getLayer() {
 		return new ActiveModulesLayer(this);
 	}

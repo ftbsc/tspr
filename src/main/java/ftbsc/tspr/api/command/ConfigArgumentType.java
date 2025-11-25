@@ -17,6 +17,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.helpers.Chat;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +29,16 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+/**
+ * An {@link ArgumentType} which only accepts valid config paths, providing completions on each path step
+ * @author alemi
+ */
 public class ConfigArgumentType implements ArgumentType<ConfigArgumentType.ConfigLevel> {
 	private List<String> availableConfigs;
 
+	/**
+	 * Build a {@link ConfigArgumentType} from provided configuration specification ({@link ModConfigSpec})
+	 */
 	public static ConfigArgumentType of(ModConfigSpec spec) {
 		ConfigArgumentType cfg = new ConfigArgumentType();
 		cfg.availableConfigs = new ArrayList<>();
@@ -40,17 +48,19 @@ public class ConfigArgumentType implements ArgumentType<ConfigArgumentType.Confi
 		return cfg;
 	}
 
+	@Override
 	public ConfigLevel parse(StringReader reader) throws CommandSyntaxException {
 		Object thing = Tiramisuper.spec().getValues().get(reader.readString());
 		if (thing instanceof Config container) {
 			return new ConfigLevel(container, null);
-		} else if (thing instanceof ModConfigSpec.ConfigValue value) {
+		} else if (thing instanceof ConfigValue value) {
 			return new ConfigLevel(null, value);
 		} else {
 			throw new SimpleCommandExceptionType(new LiteralMessage("no such config")).create();
 		}
 	}
 
+	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
 		return CompletableFuture.supplyAsync(() -> {
 			List<Suggestion> suggestions = this.availableConfigs.stream()
@@ -68,26 +78,43 @@ public class ConfigArgumentType implements ArgumentType<ConfigArgumentType.Confi
 		});
 	}
 
+	@Override
 	public Collection<String> getExamples() {
 		return ConfigArgumentType.EXAMPLES;
 	}
 
-	public static class ConfigLevel {
-		public final @Nullable Config container;
-		public final @Nullable ModConfigSpec.ConfigValue<?> value;
 
-		public ConfigLevel(@Nullable Config container, @Nullable ModConfigSpec.ConfigValue<?> value) {
+	/**
+	 * Wrapper utility type for handling either a config Node or Container
+	 */
+	public static class ConfigLevel {
+		/** Config container, if present */
+		public final @Nullable Config container;
+		/** Config node value, if present */
+		public final @Nullable ConfigValue<?> value;
+
+		/**
+		 * Construct a {@link ConfigLevel} from either a Container ({@link Config}) or node ({@link ConfigValue})
+		 */
+		public ConfigLevel(@Nullable Config container, @Nullable ConfigValue<?> value) {
 			this.container = container;
 			this.value = value;
 		}
 
+		/**
+		 * Pretty-prints to chat the current Config level: either a distinct node, or all
+		 * childen nodes contained in given level
+		 */
 		public void print() {
 			if (this.container != null) {
 				ConfigArgumentType.recursiveConfigVisitor(this.container, value -> {
-					Chat.message("%s: %s", value.getPath().stream().collect(Collectors.joining(".")), value.get().toString());
+					Chat.message("%s: %s", String.join(".", value.getPath()), value.get().toString());
 				});
-			} else if (this.value != null) {
-				Chat.message("%s: %s", this.value.getPath().stream().collect(Collectors.joining(".")), this.value.get().toString());
+			}
+
+			if (this.value != null) {
+				ConfigValue<?> v = this.value; // make null checker happy
+				Chat.message("%s: %s", String.join(".", v.getPath()), v.get().toString());
 			}
 		}
 	}
@@ -110,9 +137,9 @@ public class ConfigArgumentType implements ArgumentType<ConfigArgumentType.Confi
 		}
 	}
 
-	private static void recursiveConfigVisitor(UnmodifiableConfig container, Consumer<ModConfigSpec.ConfigValue<?>> visitor) {
+	private static void recursiveConfigVisitor(UnmodifiableConfig container, Consumer<ConfigValue<?>> visitor) {
 		for (Entry e : container.entrySet()) {
-			if (e.getValue() instanceof ModConfigSpec.ConfigValue value) {
+			if (e.getValue() instanceof ConfigValue value) {
 				visitor.accept(value);
 			} else if (e.getValue() instanceof Config innerContainer) {
 				ConfigArgumentType.recursiveConfigVisitor(innerContainer, visitor);

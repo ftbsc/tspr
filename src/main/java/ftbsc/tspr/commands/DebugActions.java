@@ -19,6 +19,9 @@ import net.neoforged.neoforge.server.command.EnumArgument;
 
 import static ftbsc.tspr.Tiramisuper.mc;
 
+/**
+ * Command to execute debug actions without remembering their (weird) keybinds
+ */
 @AutoService(ILoadable.class)
 public class DebugActions extends BaseCommand {
 
@@ -27,6 +30,7 @@ public class DebugActions extends BaseCommand {
 		DECREASE
 	}
 
+	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(

@@ -4,6 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * Utility to clamp precise positions to {@link BlockPos}
+ */
 public class Position {
 	public static BlockPos clampToBlock(Vec3 pos) {
 		return new BlockPos(

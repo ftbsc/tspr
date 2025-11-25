@@ -23,7 +23,9 @@ public final class Scanner {
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	// register a block to be watched on chunk loads
+	/**
+	 * register a block to be watched on chunk loads
+	 */
 	public void watch(Block block) {
 		this.watched.add(block);
 	}
@@ -88,7 +90,7 @@ public final class Scanner {
 	}
 
 	@SubscribeEvent
-	public void onPacket(PacketEvent.Incoming event) {
+	void onPacket(PacketEvent.Incoming event) {
 		this.executor.submit(() -> {
 			if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
 				this.processChange(packet.getPos(), packet.getBlockState().getBlock());

@@ -7,16 +7,21 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+/**
+ * A module which can be toggled on and off, with an optional keybind
+ */
 public abstract class TogglableModule extends BaseModule {
 
 	protected ModConfigSpec.BooleanValue enabled;
 
 	private static final KeyMapping.Category category = new KeyMapping.Category(ResourceLocation.parse("ftbsc:tspr.options.toggles"));
 
+	/** is this module currently enabled? */
 	public boolean isEnabled() {
 		return this.enabled.getAsBoolean();
 	}
 
+	/** toggle this module on/off */
 	public boolean toggle() {
 		boolean previous = this.enabled.getAsBoolean();
 		this.enabled.set(!previous);
@@ -24,6 +29,7 @@ public abstract class TogglableModule extends BaseModule {
 		return !previous;
 	}
 
+	/** set a specific enabled state */
 	public boolean setEnabled(boolean enabled) {
 		boolean previous = this.enabled.getAsBoolean();
 		if (previous != enabled) {
@@ -39,6 +45,7 @@ public abstract class TogglableModule extends BaseModule {
 		TogglableModule.category
 	);
 
+	/** returns the assigned key to toggle this module */
 	public KeyMapping getToggleKey() {
 		return this.toggleKey;
 	}

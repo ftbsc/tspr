@@ -20,8 +20,12 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 import static ftbsc.tspr.Tiramisuper.mc;
 
+/**
+ * Highlight ores, for easier mining
+ * Depends on {@link ftbsc.tspr.services.Scanner} service
+ */
 @AutoService(ILoadable.class)
-public class Valuables extends ScannerModule {
+public class Ores extends ScannerModule {
 
 	private ModConfigSpec.BooleanValue ancientDebris;
 	private ModConfigSpec.BooleanValue diamonds;
@@ -36,6 +40,7 @@ public class Valuables extends ScannerModule {
 	private ModConfigSpec.DoubleValue distance;
 	private Map<Block, ModConfigSpec.BooleanValue> blockConfigs;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.ancientDebris = builder
 			.comment("show Ancient Debris")
@@ -104,6 +109,7 @@ public class Valuables extends ScannerModule {
 		);
 	}
 
+	@Override
 	protected Iterable<Block> getBlocks() {
 		return Arrays.asList(
 			Blocks.ANCIENT_DEBRIS,
@@ -155,7 +161,7 @@ public class Valuables extends ScannerModule {
 			if (shouldDraw == null || !shouldDraw.getAsBoolean()) continue;
 
 			for (BlockPos pos : Tiramisuper.SCANNER.getAll(block)) {
-				if (mc().player.distanceToSqr((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()) > maxDist) {
+				if (mc().player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) > maxDist) {
 					continue;
 				}
 				draw.drawOutlineBox(pos, color, alpha);
@@ -163,8 +169,9 @@ public class Valuables extends ScannerModule {
 		}
 	}
 
+	@Override
 	protected Integer getColor(Block block) {
-		return Valuables.blockColors.get(block);
+		return Ores.blockColors.get(block);
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(

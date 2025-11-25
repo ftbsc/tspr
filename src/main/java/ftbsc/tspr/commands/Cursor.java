@@ -11,27 +11,38 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 
-import static ftbsc.tspr.Tiramisuper.mc;
-
+/**
+ * Command to get information on what's under player cursor
+ */
 @AutoService(ILoadable.class)
 public class Cursor extends BaseCommand {
 
+	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(
 				Commands.literal("info")
 					.executes(ctx -> {
-						switch (mc().hitResult) {
+						Minecraft mc = Minecraft.getInstance();
+						switch (mc.hitResult) {
+							case null:
+								Chat.message(ChatFormatting.RED, "hitResult is null");
+								return 0;
 							case BlockHitResult block:
 								BlockPos pos = block.getBlockPos();
-								BlockState state = mc().level.getBlockState(pos);
-								Chat.message("Block @ %s: %s", pos.toString(), state.toString());
-								return 1;
+								if (mc.level != null) {
+									BlockState state = mc.level.getBlockState(pos);
+									Chat.message("Block @ %s: %s", pos.toString(), state.toString());
+									return 1;
+								}
+								Chat.message(ChatFormatting.RED, "world is not available");
+								return 0;
 							case EntityHitResult entity:
 								Vec3 loc = entity.getLocation();
 								Chat.message("Entity @ %s: %s", loc, entity.getEntity());

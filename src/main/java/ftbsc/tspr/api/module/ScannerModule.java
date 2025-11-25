@@ -10,6 +10,10 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+/**
+ * A module which depends on the {@link ftbsc.tspr.services.Scanner} service to provide
+ * position of specific blocks in the world
+ */
 public abstract class ScannerModule extends TogglableModule {
 
 	protected ModConfigSpec.DoubleValue alpha;

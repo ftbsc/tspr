@@ -9,10 +9,20 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 import static ftbsc.tspr.Tiramisuper.mc;
 
+/**
+ * A module which draws 2D information on the screen, usually text
+ */
 public abstract class HudModule extends TogglableModule {
 
+	/**
+	 * Get this HudModule layer, to register into the Layer Stack
+	 * @return GuiLayer
+	 */
 	public abstract GuiLayer getLayer();
 
+	/**
+	 * Anchoring position for HUD elements
+	 */
 	public enum Anchor {
 		TOPLEFT,
 		TOPCENTER,
@@ -74,7 +84,7 @@ public abstract class HudModule extends TogglableModule {
 				break;
 		}
 
-		return Mth.floor((double) x / this.scale.get());
+		return Mth.floor(x / this.scale.get());
 	}
 
 	protected int getY() { return this.getY(0); }
@@ -100,7 +110,7 @@ public abstract class HudModule extends TogglableModule {
 				break;
 		}
 
-		return Mth.floor((double) y / this.scale.get());
+		return Mth.floor(y / this.scale.get());
 	}
 
 	protected int inc(int y, int val) {

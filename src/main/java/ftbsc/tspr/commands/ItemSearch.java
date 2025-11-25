@@ -8,6 +8,9 @@ import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.command.BaseCommand;
 import ftbsc.tspr.helpers.Chat;
 import ftbsc.tspr.helpers.Inventory;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,29 +20,37 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import static ftbsc.tspr.Tiramisuper.mc;
-
+/**
+ * Command to search items by id or by name
+ */
 @AutoService(ILoadable.class)
 public class ItemSearch extends BaseCommand {
 
 	@Override
 	public String getName() { return "item"; }
 
+	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(
 				Commands.literal("stats")
 					.executes(ctx -> {
-						Slot slot = Inventory.hotbar(mc().player).get(mc().player.getInventory().getSelectedSlot());
-						if (!slot.hasItem()) return 0;
-						Chat.message(
-							"Item %s: A %.1f | S %.1f | DPS %.2f",
-							slot.getItem().getItem().toString(),
-							Inventory.itemAttachDamage(slot.getItem()),
-							Inventory.itemAttackSpeed(slot.getItem()),
-							Inventory.itemDPS(slot.getItem())
-						);
-						return 1;
+						Minecraft mc = Minecraft.getInstance();
+						if (mc.player != null) {
+							LocalPlayer player = mc.player;
+							Slot slot = Inventory.hotbar(player).get(player.getInventory().getSelectedSlot());
+							if (!slot.hasItem()) return 0;
+							Chat.message(
+								"Item %s: A %.1f | S %.1f | DPS %.2f",
+								slot.getItem().getItem().toString(),
+								Inventory.itemAttachDamage(slot.getItem()),
+								Inventory.itemAttackSpeed(slot.getItem()),
+								Inventory.itemDPS(slot.getItem())
+							);
+							return 1;
+						}
+						Chat.message(ChatFormatting.RED, "no loaded player");
+						return 0;
 					})
 			)
 			.then(
@@ -66,9 +77,14 @@ public class ItemSearch extends BaseCommand {
 					)
 			)
 			.executes(ctx -> {
-				ItemStack item = mc().player.getInventory().getSelectedItem();
-				Chat.message(item.toString());
-				return 1;
+				Minecraft mc = Minecraft.getInstance();
+				if (mc.player != null) {
+					ItemStack item = mc.player.getInventory().getSelectedItem();
+					Chat.message(item.toString());
+					return 1;
+				}
+				Chat.message(ChatFormatting.RED, "no loaded player");
+				return 0;
 			});
 	}
 }

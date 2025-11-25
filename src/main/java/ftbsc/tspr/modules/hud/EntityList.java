@@ -26,6 +26,7 @@ public class EntityList extends HudModule {
 	private ModConfigSpec.EnumValue<ChatFormatting> color;
 	private ModConfigSpec.BooleanValue living;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.color = builder
 			.comment("color to use")
@@ -35,6 +36,7 @@ public class EntityList extends HudModule {
 			.define("living", true);
 	}
 
+	@Override
 	public GuiLayer getLayer() {
 		return new EntityListLayer(this);
 	}

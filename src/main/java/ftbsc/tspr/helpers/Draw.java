@@ -20,11 +20,18 @@ import static ftbsc.tspr.Tiramisuper.mc;
 
 import java.util.OptionalDouble;
 
+/**
+ * Draw 3D shapes in client world
+ */
 public class Draw {
 
 	private PoseStack poseStack;
 	private Vec3 camera;
 
+	/**
+	 * Prepare for drawing from a {@link RenderLevelStageEvent}
+	 * @param event RenderLevelStageEvent
+	 */
 	public static Draw prepare(RenderLevelStageEvent event) {
 		Draw draw = new Draw();
 		draw.poseStack = event.getPoseStack();
@@ -32,6 +39,12 @@ public class Draw {
 		return draw;
 	}
 
+	/**
+	 * Draws an outline box, without faces filling
+	 * @param pos location to draw
+	 * @param color packed int RBG color
+	 * @param alpha transparency value
+	 */
 	public void drawOutlineBox(BlockPos pos, int color, float alpha) {
 		Vec3 offset = Vec3.atLowerCornerOf(pos).subtract(this.camera);
 		this.poseStack.pushPose();
@@ -45,6 +58,12 @@ public class Draw {
 		this.poseStack.popPose();
 	}
 
+	/**
+	 * Draws a transparent box
+	 * @param pos location to draw
+	 * @param color packed int RBG color
+	 * @param alpha transparency value
+	 */
 	public void drawFilledBox(BlockPos pos, int color, float alpha) {
 		Vec3 offset = Vec3.atLowerCornerOf(pos).subtract(this.camera);
 		this.poseStack.pushPose();
@@ -60,6 +79,13 @@ public class Draw {
 		this.poseStack.popPose();
 	}
 
+	/**
+	 * Draws a transparent box with outlines
+	 * @param pos location to draw
+	 * @param color packed int RBG color
+	 * @param alpha_line transparency value for outlines
+	 * @param alpha_face transparency value for faces
+	 */
 	public void drawOutlineFilledBox(BlockPos pos, int color, float alpha_line, float alpha_face) {
 		Vec3 offset = Vec3.atLowerCornerOf(pos).subtract(this.camera);
 		this.poseStack.pushPose();
@@ -80,12 +106,14 @@ public class Draw {
 		this.poseStack.popPose();
 	}
 
+	/** render pipeline for lines ignoring depth culling */
 	public static final RenderPipeline LINES_NO_DEPTH = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
 		.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
 		.withCull(false)
 		.withLocation(ResourceLocation.parse("ftbsc:pipelines/lines_no_depth"))
 		.build();
 
+	/** render pipeline for quads ignoring depth culling */
 	public static final RenderPipeline DEBUG_SECTION_QUADS_NO_DEPTH = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
 		.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
 		.withCull(false)

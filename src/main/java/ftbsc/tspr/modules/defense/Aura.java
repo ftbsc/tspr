@@ -40,6 +40,7 @@ public class Aura extends TogglableModule {
 	private ModConfigSpec.BooleanValue neutral;
 	// private ModConfigSpec.BooleanValue friends;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.reach = builder
 			.comment("max reach range for attacking")

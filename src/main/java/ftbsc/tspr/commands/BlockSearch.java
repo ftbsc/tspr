@@ -16,12 +16,16 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 
+/**
+ * Command to search blocks by id or by name
+ */
 @AutoService(ILoadable.class)
 public class BlockSearch extends BaseCommand {
 
 	@Override
 	public String getName() { return "block"; }
 
+	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> command(LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext context) {
 		return builder
 			.then(

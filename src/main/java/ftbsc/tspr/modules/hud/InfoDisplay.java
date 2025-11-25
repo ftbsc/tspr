@@ -27,6 +27,7 @@ import static ftbsc.tspr.Tiramisuper.mc;
 @AutoService(ILoadable.class)
 public class InfoDisplay extends HudModule {
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.logo = builder
 			.comment("show TSPR logo at the top")
@@ -60,6 +61,7 @@ public class InfoDisplay extends HudModule {
 			.defineEnum("color", ChatFormatting.WHITE);
 	}
 
+	@Override
 	public GuiLayer getLayer() {
 		return new InfoDisplayLayer(this);
 	}

@@ -23,6 +23,7 @@ public class ChatTweaks extends BaseModule {
 	private ModConfigSpec.BooleanValue timestamps;
 	private ModConfigSpec.BooleanValue keepPrevious;
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.timestamps = builder
 			.comment("add timestamps to chat")

@@ -21,7 +21,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
 @AutoService(ILoadable.class)
-public class ConfigCommand extends BaseCommand {
+public class Config extends BaseCommand {
 
 	@Override
 	public String getName() { return "cfg"; }

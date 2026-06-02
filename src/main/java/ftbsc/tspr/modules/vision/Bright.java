@@ -15,12 +15,14 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 @AutoService(ILoadable.class)
 public class Bright extends TogglableModule {
 	
+	@Override
 	public void config(ModConfigSpec.Builder builder) {}
 
 	private boolean once = false;
 
 	@SubscribeEvent
 	void onTick(ClientTickEvent.Pre event) {
+		if (mc().player == null) return;
 		if (!this.isEnabled()) {
 			if (this.once) {
 				mc().player.removeEffect(MobEffects.NIGHT_VISION);

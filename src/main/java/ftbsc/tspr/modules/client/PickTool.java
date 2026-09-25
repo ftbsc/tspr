@@ -30,6 +30,8 @@ public class PickTool extends TogglableModule {
 
 	// private ModConfigSpec.IntValue limit;
 	// private ModConfigSpec.BooleanValue prefer_looting;
+	private ModConfigSpec.BooleanValue attacking;
+	private ModConfigSpec.BooleanValue mining;
 
 	@Override
 	public void config(ModConfigSpec.Builder builder) {
@@ -40,6 +42,14 @@ public class PickTool extends TogglableModule {
 		// this.prefer_looting = builder
 		// 	.comment("when picking best weapon, prefer looting over slight more DPS")
 		// 	.define("prefer-looting", true);
+
+		this.attacking = builder
+			.comment("pick weapon when attacking")
+			.define("attacking", false);
+
+		this.mining = builder
+			.comment("pick tool when mining")
+			.define("mining", true);
 	}
 
 	public static boolean itemIsTooDamaged(ItemStack item) {
@@ -118,10 +128,14 @@ public class PickTool extends TogglableModule {
 			case null:
 				break;
 			case BlockHitResult block:
-				PickTool.selectBestTool(block.getBlockPos());
+				if (this.mining.get()) {
+					PickTool.selectBestTool(block.getBlockPos());
+				}
 				break;
 			case EntityHitResult _:
-				PickTool.selectBestWeapon();
+				if (this.attacking.get()) {
+					PickTool.selectBestWeapon();
+				}
 			default:
 				break;
 		}

@@ -1,6 +1,8 @@
 package ftbsc.tspr.api.module;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+//import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
@@ -134,6 +136,32 @@ public abstract class HudModule extends TogglableModule {
 		}
 	}
 
+	protected int drawString(GuiGraphicsExtractor gui, Component text, int x, int y, int color) {
+		switch (this.anchor.get()) {
+			case TOPRIGHT:
+			case MIDDLERIGHT:
+			case BOTTOMRIGHT:
+				int delta = mc().font.width(text);
+				gui.text(mc().font, text, x - delta, y, color);
+				break;
+
+			case BOTTOMCENTER:
+			case MIDDLECENTER:
+			case TOPCENTER:
+				gui.centeredText(mc().font, text, x, y, color);
+				break;
+
+			case TOPLEFT:
+			case MIDDLELEFT:
+			case BOTTOMLEFT:
+			default:
+				gui.text(mc().font, text, x, y, color);
+				break;
+		}
+		
+		return this.inc(y, mc().font.lineHeight + 1);
+	}
+
 	protected Component prefixed(String text, Object... args) {
 		return this.prefixed(Component.literal(String.format(text, args)));
 	}
@@ -170,6 +198,6 @@ public abstract class HudModule extends TogglableModule {
 	}
 
 	protected boolean shouldHide() {
-		return !this.enabled.getAsBoolean() || mc().getDebugOverlay().showDebugScreen() || mc().options.hideGui;
+		return !this.enabled.getAsBoolean() || mc().getDebugOverlay().showDebugScreen() || mc().gui.hud.isHidden();
 	}
 }

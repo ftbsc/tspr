@@ -29,7 +29,7 @@ public abstract class PacketPatch implements Opcodes {
 	}
 
 	@Target(of = "injectIncomingInterceptor")
-	abstract void channelRead0(ChannelHandlerContext ctx, Packet<?> pak);
+	abstract protected void channelRead0(ChannelHandlerContext ctx, Packet<?> pak);
 
 	@Injector(reason = "add hook to intercept and alter/cancel incoming packets")
 	public void injectIncomingInterceptor(ClassNode clazz, MethodNode main) {

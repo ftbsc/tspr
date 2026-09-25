@@ -19,6 +19,7 @@ public class Click extends TogglableModule {
 	private ModConfigSpec.BooleanValue attack;
 	private int counter = 0;
 
+	@Override
 	protected void config(ModConfigSpec.Builder builder) {
 		this.interval = builder
 			.comment("How many game ticks between each click?")

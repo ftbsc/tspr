@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ftbsc.tspr.Tiramisuper;
-import ftbsc.tspr.helpers.Draw;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -21,8 +23,8 @@ public abstract class ScannerModule extends TogglableModule {
 	protected abstract Iterable<Block> getBlocks();
 	protected abstract Integer getColor(Block block);
 
-	protected void draw(Draw draw, BlockPos pos, int color, float alpha) {
-		draw.drawFilledBox(pos, color, alpha);
+	protected void draw(BlockPos pos, int rgb, float alpha) {
+		Gizmos.cuboid(pos, GizmoStyle.fill(ARGB.color(alpha, rgb))).setAlwaysOnTop();
 	}
 
 	protected Set<Block> handledBlocks = new HashSet<>();
@@ -43,19 +45,18 @@ public abstract class ScannerModule extends TogglableModule {
 		super.prepareConfig(builder);
 	}
 
-	protected void doRender(RenderLevelStageEvent.AfterEntities event) {
+	protected void doRender(RenderLevelStageEvent.AfterLevel event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
 
-		Draw draw = Draw.prepare(event);
 		float alpha = (float) this.alpha.getAsDouble();
 
 		for (Block block : this.handledBlocks) {
 			Integer color = this.getColor(block);
 			if (color == null) continue;
 			for (BlockPos pos : Tiramisuper.SCANNER.getAll(block)) {
-				this.draw(draw, pos, color, alpha);
+				this.draw(pos, color, alpha);
 			}
 		}
 	}

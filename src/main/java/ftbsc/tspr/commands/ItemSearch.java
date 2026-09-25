@@ -70,7 +70,7 @@ public class ItemSearch extends BaseCommand {
 						Commands.argument("name", ItemArgument.item(context))
 							.executes( ctx -> {
 								ItemInput arg = ctx.getArgument("name", ItemInput.class);
-								Item item = arg.getItem();
+								Item item = arg.item().value();
 								Chat.message("item #[%d] >> %s", Item.getId(item), item.toString());
 								return 1;
 							})

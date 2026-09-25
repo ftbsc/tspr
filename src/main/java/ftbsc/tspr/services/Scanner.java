@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 
 import ftbsc.tspr.asm.events.PacketEvent;
+import ftbsc.tspr.helpers.Position;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
@@ -97,7 +98,7 @@ public final class Scanner {
 			}
 
 			if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
-				packet.runUpdates((pos, state) -> this.processChange(new BlockPos(pos), state.getBlock()));
+				packet.runUpdates((pos, state) -> this.processChange(Position.clone(pos), state.getBlock()));
 			}
 		});
 	}

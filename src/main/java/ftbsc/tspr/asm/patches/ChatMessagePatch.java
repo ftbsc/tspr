@@ -18,8 +18,9 @@ import ftbsc.lll.processor.annotations.Patch;
 import ftbsc.lll.processor.annotations.Target;
 import ftbsc.lll.proxies.impl.MethodProxy;
 import ftbsc.lll.utils.nodes.MethodProxyInsnNode;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessageSource;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
 import net.neoforged.neoforge.common.NeoForge;
@@ -28,7 +29,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public abstract class ChatMessagePatch implements Opcodes {
 
 	@Target(of = "injectChatMessage")
-	public abstract void addMessage(Component chatComponent, @Nullable MessageSignature headerSignature, @Nullable GuiMessageTag tag);
+	public abstract void addMessage(Component chatComponent, @Nullable MessageSignature headerSignature, GuiMessageSource source, @Nullable GuiMessageTag tag);
 
 
 	@Injector(reason = "add hook to intercept received chat messages")

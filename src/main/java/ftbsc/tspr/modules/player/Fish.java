@@ -4,7 +4,7 @@ import net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.Item;
@@ -24,6 +24,7 @@ public class Fish extends TogglableModule {
 	public ModConfigSpec.BooleanValue recast;
 	public ModConfigSpec.IntValue delay;
 
+	@Override
 	protected void config(ModConfigSpec.Builder builder) {
 		this.recast = builder
 			.comment("Should auto-fish also recast rod?")
@@ -51,14 +52,14 @@ public class Fish extends TogglableModule {
 
 		if (!holdingRod) return;
 
-		if (sound.getLocation().equals(ResourceLocation.withDefaultNamespace("random/splash"))) {
+		if (sound.getLocation().equals(Identifier.withDefaultNamespace("random/splash"))) {
 			mc().gameMode.useItem(mc().player, InteractionHand.MAIN_HAND);
-			mc().player.swing(InteractionHand.MAIN_HAND);
+			mc().player.swing(InteractionHand.MAIN_HAND, true);
 
 			if (this.recast.getAsBoolean()) {
 				Tiramisuper.SCHEDULER.schedule(this.delay.getAsInt(), () -> {
 					mc().gameMode.useItem(mc().player, InteractionHand.MAIN_HAND);
-					mc().player.swing(InteractionHand.MAIN_HAND);
+					mc().player.swing(InteractionHand.MAIN_HAND, true);
 				});
 			}
 		}

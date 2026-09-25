@@ -20,6 +20,7 @@ public class Disconnect extends TogglableModule {
 
 	private ModConfigSpec.DoubleValue threshold;
 
+	@Override
 	protected void config(ModConfigSpec.Builder builder) {
 		this.threshold = builder
 			.comment("Health limit for disconnecting (in half hearths)")

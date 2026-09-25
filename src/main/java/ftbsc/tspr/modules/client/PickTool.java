@@ -120,7 +120,7 @@ public class PickTool extends TogglableModule {
 			case BlockHitResult block:
 				PickTool.selectBestTool(block.getBlockPos());
 				break;
-			case EntityHitResult entity:
+			case EntityHitResult _:
 				PickTool.selectBestWeapon();
 			default:
 				break;

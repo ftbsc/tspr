@@ -67,7 +67,7 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("reloadchunks")
 					.executes(ctx -> {
-						mc().levelRenderer.allChanged();
+						mc().levelExtractor.allChanged();
 						Chat.message("reloading chunks");
 						return 0;
 					})
@@ -84,7 +84,7 @@ public class DebugActions extends BaseCommand {
 				Commands.literal("clearmessages")
 					.executes(ctx -> {
 						if (mc().gui != null) {
-							mc().gui.getChat().clearMessages(false);
+							mc().gui.hud.getChat().clearMessages(false);
 							Chat.message("cleared chat messages");
 							return 0;
 						}
@@ -138,14 +138,14 @@ public class DebugActions extends BaseCommand {
 			.then(
 				Commands.literal("gamemode")
 					.executes(ctx -> {
-						mc().setScreen(new GameModeSwitcherScreen());
+						mc().setScreenAndShow(new GameModeSwitcherScreen());
 						return 0;
 					})
 			)
 			.then(
 				Commands.literal("screen")
 					.executes(ctx -> {
-						mc().setScreen(new DebugOptionsScreen());
+						mc().setScreenAndShow(new DebugOptionsScreen());
 						return 0;
 					})
 			)

@@ -8,10 +8,15 @@ import com.google.auto.service.AutoService;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.asm.events.PacketEvent;
+import ftbsc.tspr.helpers.Color;
+import ftbsc.tspr.helpers.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
@@ -71,6 +76,7 @@ public class InfoDisplay extends HudModule {
 	private double average_speed = 0.0;
 	private double instant_tps   = 0.0;
 	private int    instant_ping  = 0;
+	private long   last_packet   = 0;
 	private Queue<Double> speed_history = new LinkedList<>();
 	private Queue<Long>   tps_history   = new LinkedList<>();
 
@@ -96,16 +102,18 @@ public class InfoDisplay extends HudModule {
 
 
 	@SubscribeEvent
-	public void onTick(ClientTickEvent.Post event) {
+	void onTick(ClientTickEvent.Post event) {
 		if (!this.speed.get()) return;
-		if (mc().player != null) {
-			this.instant_speed = this.last_position.distanceTo(mc().player.position());
-			this.last_position = mc().player.position();
-			PlayerInfo info = mc().getConnection().getPlayerInfo(
-				mc().player.getGameProfile().id()
-			);
-			if (info != null) { // bungeecord switching makes this null for a second
-				this.instant_ping = info.getLatency();
+		LocalPlayer player = mc().player;
+		if (player != null) {
+			this.instant_speed = this.last_position.distanceTo(player.position());
+			this.last_position = player.position();
+			ClientPacketListener connection = mc().getConnection();
+			if (connection != null) {
+				PlayerInfo info = connection.getPlayerInfo(player.getGameProfile().id());
+				if (info != null) { // bungeecord switching makes this null for a second
+					this.instant_ping = info.getLatency();
+				}
 			}
 		} else {
 			this.instant_speed = 0.0;
@@ -123,17 +131,19 @@ public class InfoDisplay extends HudModule {
 	}
 
 	@SubscribeEvent
-	public void onPacket(PacketEvent.Incoming event) {
+	void onPacket(PacketEvent.Incoming event) {
 		if (event.packet instanceof ClientboundSetTimePacket) {
-			this.tps_history.offer(System.currentTimeMillis());
+			long now = System.currentTimeMillis();
+			this.last_packet = now;
+			this.tps_history.offer(now);
 			while (this.tps_history.size() > this.tps_sample_size.get()) {
 				this.tps_history.poll();
 			}
 			double positive_time = 0.;
-			double last_time = 0;
+			double last_time = 0.;
 			for (long t : this.tps_history) {
 				if (last_time != 0) {
-					double delta = (double) (t - last_time) / 1000.;
+					double delta = (t - last_time) / 1000.;
 					positive_time += Math.max(delta, 1.);
 				}
 				last_time = t;
@@ -143,7 +153,7 @@ public class InfoDisplay extends HudModule {
 	}
 
 	// Time utils
-	private String getTimePhase(long time) {
+	private static String getTimePhase(long time) {
 		if (time > 23000) return "Dawn";
 		if (time > 18500) return "Night";
 		if (time > 17500) return "Midnight";
@@ -154,7 +164,7 @@ public class InfoDisplay extends HudModule {
 		return "Morning";
 	}
 
-	private int getNextStep(long time) {
+	private static int getNextStep(long time) {
 		if (time > 23000) return 24000;
 		if (time > 18500) return 23000;
 		if (time > 17500) return 18500;
@@ -172,14 +182,16 @@ public class InfoDisplay extends HudModule {
 		public InfoDisplayLayer(InfoDisplay mod) {
 			this.mod = mod;
 		}
+
 		@Override
-		public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
+		public void render(GuiGraphicsExtractor gui, DeltaTracker deltaTracker) {
 			if (this.mod.shouldHide()) return;
 
 			int y = this.mod.getY();
 			int x = this.mod.getX();
-			int color = ARGB.opaque(this.mod.color.get().getColor());
+			int color = ARGB.opaque(Color.pack(Lang.NN(this.mod.color.get(), ChatFormatting.WHITE)));
 			float scale = (float) this.mod.scale.getAsDouble();
+			long since_last = System.currentTimeMillis() - this.mod.last_packet;
 
 			gui.pose().pushMatrix();
 			gui.pose().scale(4.f * scale);
@@ -193,8 +205,9 @@ public class InfoDisplay extends HudModule {
 				);
 
 
+			// TODO use the HudModule helper to have proper anchoring, but keep shadow
 			if (this.mod.logo.get()) {
-				gui.drawString(mc().font, logo, x, y, color, true);
+				gui.text(mc().font, logo, x, y, color, true);
 				y = this.mod.inc(y, (mc().font.lineHeight + 1) * 4);
 			}
 
@@ -205,39 +218,38 @@ public class InfoDisplay extends HudModule {
 
 			long day = 0;
 			long time = 0;
-			if (mc().level != null) {
-				day = mc().level.dayTime() / 24000L;
-				time = mc().level.dayTime() % 24000L;
+			ClientLevel level = mc().level;
+			if (level != null) {
+				day = level.getLevelData().getGameTime() / 24000L;
+				time = level.getLevelData().getGameTime() % 24000L;
 			}
 
 			if (this.mod.fps.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("fps: %d", mc().getFps()), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				y = this.mod.drawString(gui, this.mod.prefixed("fps: %d", mc().getFps()), x, y, color);
 			}
 
 			if (this.mod.ping.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("ping: %d", this.mod.instant_ping), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				y = this.mod.drawString(gui, this.mod.prefixed("ping: %d", this.mod.instant_ping), x, y, color);
 			}
 
 			if (this.mod.tps.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("tps: %.1f", this.mod.instant_tps), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				String lag_warn = "";
+				if (since_last > 1000) {
+					lag_warn = String.format(" [lag: %.1fs]", since_last / 1000.);
+				}
+				y = this.mod.drawString(gui, this.mod.prefixed("tps: %.1f%s", this.mod.instant_tps, lag_warn), x, y, color);
 			}
 
 			if (this.mod.speed.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				y = this.mod.drawString(gui, this.mod.prefixed("speed: %.1f [%.1f] m/s", this.mod.instant_speed * 20.0, this.mod.average_speed * 20.0), x, y, color);
 			}
 
 			if (this.mod.age.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("age: %d (~%d days)", day, day / (3 * 24)), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				y = this.mod.drawString(gui, this.mod.prefixed("age: %d (~%d days)", day, day / (3 * 24)), x, y, color);
 			}
 
 			if (this.mod.time.get()) {
-				gui.drawString(mc().font, this.mod.prefixed("time: %d/%d (%s)", (time / this.mod.TPS), (this.mod.getNextStep(time) / this.mod.TPS), this.mod.getTimePhase(time)), x, y, color);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
+				y = this.mod.drawString(gui, this.mod.prefixed("time: %d/%d (%s)", (time / this.mod.TPS), (InfoDisplay.getNextStep(time) / this.mod.TPS), InfoDisplay.getTimePhase(time)), x, y, color);
 			}
 
 			gui.pose().popMatrix();

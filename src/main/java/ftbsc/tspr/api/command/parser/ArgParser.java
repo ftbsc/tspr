@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,12 +12,12 @@ import java.util.Map;
  */
 public class ArgParser {
 
-	private static final Map<Class<?>, IParser<?>> parsers = Map.ofEntries(
+	private static final Map<Class<?>, IParser<?>> parsers = new HashMap<>(Map.ofEntries(
 		Map.entry(Boolean.class, new BooleanParser()),
 		Map.entry(Integer.class, new IntegerParser()),
 		Map.entry(Double.class,  new DoubleParser()),
 		Map.entry(String.class,  new StringParser())
-	);
+	));
 
 	/**
 	 * Gets the parser associated with a certain class.

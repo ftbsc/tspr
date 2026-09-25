@@ -45,7 +45,7 @@ public class Chat {
 	 * @param args varargs for String.format
 	 */
 	public static void message(Style style, String msg, Object... args) {
-		Minecraft.getInstance().gui.getChat().addMessage(
+		Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(
 			Component.literal("")
 				.append(Component.literal("$").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY).withObfuscated(true)))
 				.append(Component.literal(" >> ").withColor(0xBF616A))

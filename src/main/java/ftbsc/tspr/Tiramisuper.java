@@ -19,7 +19,7 @@ import ftbsc.tspr.services.Scheduler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,7 +33,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -41,7 +40,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import ftbsc.tspr.api.module.BaseModule;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.api.module.TogglableModule;
-import ftbsc.tspr.helpers.Draw;
 
 @Mod(value = Tiramisuper.MODID, dist = Dist.CLIENT)
 public class Tiramisuper {
@@ -55,7 +53,7 @@ public class Tiramisuper {
 	private final List<BaseModule> modules = new ArrayList<>();
 	private final List<BaseCommand> commands = new ArrayList<>();
 
-	public static final KeyMapping.Category category = new KeyMapping.Category(ResourceLocation.parse("ftbsc:tspr.options.global"));
+	public static final KeyMapping.Category category = new KeyMapping.Category(Identifier.parse("ftbsc:tspr.options.global"));
 
 	private final KeyMapping optionsKey = new KeyMapping(
 		"key.tspr.showOptions",
@@ -130,7 +128,7 @@ public class Tiramisuper {
 			try {
 				LOGGER.info("Running command {}", event.getMessage());
 				this.dispatcher.execute(event.getMessage().substring(1), source);
-				Minecraft.getInstance().gui.getChat().addRecentChat(event.getMessage());
+				Minecraft.getInstance().gui.hud.getChat().addRecentChat(event.getMessage());
 				event.setCanceled(true);
 			} catch (CommandSyntaxException e) {
 				LOGGER.error("Syntax error in command: {}", e.toString());
@@ -149,7 +147,7 @@ public class Tiramisuper {
 		if (showOptions) {
 			IConfigScreenFactory.getForMod(this.modContainer.getModInfo())
 				.map(f -> f.createScreen(this.modContainer, null))
-				.ifPresent(s ->Minecraft.getInstance().setScreen(s));
+				.ifPresent(s -> Minecraft.getInstance().setScreenAndShow(s));
 		}
 	}
 
@@ -191,17 +189,11 @@ public class Tiramisuper {
 				if (mod instanceof HudModule) {
 					HudModule hud = (HudModule) mod;
 					event.registerAboveAll(
-						ResourceLocation.parse(String.format("ftbsc:tspr.gui.%s", mod.getName().toLowerCase())),
+						Identifier.parse(String.format("ftbsc:tspr.gui.%s", mod.getName().toLowerCase())),
 						hud.getLayer()
 					);
 				}
 			}
-		}
-
-		@SubscribeEvent
-		static void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
-			event.registerPipeline(Draw.LINES_NO_DEPTH);
-			event.registerPipeline(Draw.DEBUG_SECTION_QUADS_NO_DEPTH);
 		}
 	}
 }

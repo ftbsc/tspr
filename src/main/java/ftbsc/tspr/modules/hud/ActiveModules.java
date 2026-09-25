@@ -10,16 +10,16 @@ import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.HudModule;
 import ftbsc.tspr.api.module.TogglableModule;
+import ftbsc.tspr.helpers.Color;
+import ftbsc.tspr.helpers.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.ARGB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
-
-import static ftbsc.tspr.Tiramisuper.mc;
 
 @AutoService(ILoadable.class)
 public class ActiveModules extends HudModule {
@@ -61,20 +61,19 @@ public class ActiveModules extends HudModule {
 		}
 
 		@Override
-		public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
+		public void render(GuiGraphicsExtractor gui, DeltaTracker deltaTracker) {
 			if (this.mod.shouldHide()) return;
 			gui.pose().pushMatrix();
 			gui.pose().scale((float) this.mod.scale.getAsDouble());
 			int y = this.mod.getY();
 			for (String row : this.mod.modList) {
-				gui.drawString(
-					mc().font,
+				y = this.mod.drawString(
+					gui,
 					this.mod.prefixed(row),
 					this.mod.getX(),
 					y,
-					ARGB.opaque(this.mod.color.get().getColor())
+					ARGB.opaque(Color.pack(Lang.NN(this.mod.color.get(), ChatFormatting.WHITE)))
 				);
-				y = this.mod.inc(y, mc().font.lineHeight + 1);
 			}
 			gui.pose().popMatrix();
 		}

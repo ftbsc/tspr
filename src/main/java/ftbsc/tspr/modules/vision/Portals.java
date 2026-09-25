@@ -7,6 +7,7 @@ import com.google.auto.service.AutoService;
 
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.ScannerModule;
+import ftbsc.tspr.helpers.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -17,8 +18,10 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 @AutoService(ILoadable.class)
 public class Portals extends ScannerModule {
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {}
 
+	@Override
 	protected Iterable<Block> getBlocks() {
 		return Arrays.asList(
 			Blocks.NETHER_PORTAL,
@@ -26,17 +29,18 @@ public class Portals extends ScannerModule {
 		);
 	}
 
+	@Override
 	protected Integer getColor(Block block) {
 		return Portals.blockColors.get(block);
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(
-		Map.entry(Blocks.NETHER_PORTAL, ChatFormatting.DARK_PURPLE.getColor()),
-		Map.entry(Blocks.END_PORTAL, ChatFormatting.DARK_AQUA.getColor())
+		Map.entry(Blocks.NETHER_PORTAL, Color.pack(ChatFormatting.DARK_PURPLE)),
+		Map.entry(Blocks.END_PORTAL, Color.pack(ChatFormatting.DARK_AQUA))
 	);
 
 	@SubscribeEvent
-	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	void onRenderLevelStage(RenderLevelStageEvent.AfterLevel event) {
 		this.doRender(event);
 	}
 }

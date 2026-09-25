@@ -5,7 +5,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -102,12 +102,15 @@ public class Inventory {
 		return damage * speed;
 	}
 
-	public static void clickSlot(int slotIndex, ClickType click) { clickSlot(0, slotIndex, 0, click); }
-	public static void clickSlot(Slot slot, int button, ClickType click) { clickSlot(0, slot.index, button, click); }
-	public static void clickSlot(int container, int slot_index, ClickType click) { clickSlot(container, slot_index, 0, click); }
+	public static void clickSlot(int slotIndex, ContainerInput click) { clickSlot(0, slotIndex, 0, click); }
+	public static void clickSlot(Slot slot, int button, ContainerInput click) { clickSlot(0, slot.index, button, click); }
+	public static void clickSlot(int container, int slot_index, ContainerInput click) { clickSlot(container, slot_index, 0, click); }
 
-	public static void clickSlot(int container, int slot_index, int button, ClickType click) {
-		mc().gameMode.handleInventoryMouseClick(container, slot_index, button, click, Minecraft.getInstance().player);
+	public static void clickSlot(int container, int slot_index, int button, ContainerInput click) {
+		var gamemode = mc().gameMode;
+		if (gamemode != null) {
+			gamemode.handleContainerInput(container, slot_index, button, click, Minecraft.getInstance().player);
+		}
 	}
 
 	public static boolean matchItem(Pattern pattern, ItemStack stack) {

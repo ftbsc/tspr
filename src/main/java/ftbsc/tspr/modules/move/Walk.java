@@ -14,11 +14,13 @@ import static ftbsc.tspr.Tiramisuper.mc;
 @AutoService(ILoadable.class)
 public class Walk extends TogglableModule {
 
+	@Override
 	protected void config(ModConfigSpec.Builder builder) {}
+
 	private boolean once = false;
 
 	@SubscribeEvent
-	void onTick(ClientTickEvent.Pre event) {
+	void onTick(ClientTickEvent.Pre _event) {
 		if (mc().player == null) return;
 
 		if (this.enabled.getAsBoolean()) {

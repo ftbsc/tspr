@@ -7,9 +7,10 @@ import com.google.auto.service.AutoService;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
-import net.minecraft.util.Tuple;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -18,7 +19,9 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.TogglableModule;
 import ftbsc.tspr.asm.events.PacketEvent;
-import ftbsc.tspr.helpers.Draw;
+import ftbsc.tspr.helpers.Color;
+import ftbsc.tspr.helpers.Position;
+import ftbsc.tspr.helpers.Tuple;
 
 @AutoService(ILoadable.class)
 public class Updates extends TogglableModule {
@@ -29,6 +32,7 @@ public class Updates extends TogglableModule {
 
 	private final ConcurrentLinkedQueue<Tuple<BlockPos, Long>> updates = new ConcurrentLinkedQueue<>();
 
+	@Override
 	public void config(ModConfigSpec.Builder builder) {
 		this.duration = builder
 			.comment("how long to show block updates (in ms)")
@@ -51,16 +55,16 @@ public class Updates extends TogglableModule {
 	}
 
 	@SubscribeEvent
-	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	void onRenderLevelStage(RenderLevelStageEvent.AfterLevel event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
 
-		Draw draw = Draw.prepare(event);
-
 		for (Tuple<BlockPos, Long> entry : this.updates) {
-			float alpha = this.getAlpha((float) this.alpha.getAsDouble(), entry.getB(), System.currentTimeMillis(), this.duration.get());
-			draw.drawOutlineFilledBox(entry.getA(), this.color.get().getColor(), alpha, alpha / 2.f);
+			float alpha = this.getAlpha((float) this.alpha.getAsDouble(), entry.b, System.currentTimeMillis(), this.duration.get());
+			int color_stroke = Color.pack(this.color.get(), alpha);
+			int color_fill = Color.pack(this.color.get(), alpha / 2.f);
+			Gizmos.cuboid(entry.a, GizmoStyle.strokeAndFill(color_stroke, 1.f, color_fill)).setAlwaysOnTop();
 		}
 	}
 
@@ -68,7 +72,7 @@ public class Updates extends TogglableModule {
 	public void onTick(ClientTickEvent.Pre event) {
 		long time = System.currentTimeMillis();
 		long duration = this.duration.get();
-		while (this.updates.peek() != null && time - this.updates.peek().getB() > duration) {
+		while (this.updates.peek() != null && time - this.updates.peek().b > duration) {
 			this.updates.poll();
 		}
 	}
@@ -84,7 +88,7 @@ public class Updates extends TogglableModule {
 
 		if (event.packet instanceof ClientboundSectionBlocksUpdatePacket) {
 			ClientboundSectionBlocksUpdatePacket packet = (ClientboundSectionBlocksUpdatePacket) event.packet;
-			packet.runUpdates( (pos, state) -> this.updates.add(new Tuple<>(new BlockPos(pos), System.currentTimeMillis())) );
+			packet.runUpdates( (pos, state) -> this.updates.add(new Tuple<>(Position.clone(pos), System.currentTimeMillis())) );
 		}
 	}
 

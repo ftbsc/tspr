@@ -51,7 +51,7 @@ public class Highlighter extends TogglableModule {
 		Matrix3x2fStack matrix = event.getGuiGraphics().pose();
 
 		matrix.pushMatrix();
-		matrix.translate((float) screen.getGuiLeft(), (float) screen.getGuiTop());
+		matrix.translate(screen.getLeftPos(), screen.getTopPos());
 
 		for (Slot slot : screen.getMenu().slots) {
 			ItemStack stack = slot.getItem();

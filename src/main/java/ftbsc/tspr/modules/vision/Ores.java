@@ -8,9 +8,12 @@ import com.google.auto.service.AutoService;
 import ftbsc.tspr.Tiramisuper;
 import ftbsc.tspr.api.ILoadable;
 import ftbsc.tspr.api.module.ScannerModule;
-import ftbsc.tspr.helpers.Draw;
+import ftbsc.tspr.helpers.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -144,7 +147,7 @@ public class Ores extends ScannerModule {
 	}
 
 	@SubscribeEvent
-	void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+	void onRenderLevelStage(RenderLevelStageEvent.AfterLevel event) {
 		if (!this.enabled.getAsBoolean()) {
 			return;
 		}
@@ -152,11 +155,10 @@ public class Ores extends ScannerModule {
 		double maxDist = Mth.square(this.distance.getAsDouble());
 		float alpha = (float) this.alpha.getAsDouble();
 
-		Draw draw = Draw.prepare(event);
-
 		for (Block block : this.handledBlocks) {
-			Integer color = this.getColor(block);
-			if (color == null) continue;
+			Integer rgb = this.getColor(block);
+			if (rgb == null) continue;
+			int color = ARGB.color(alpha, rgb);
 			ModConfigSpec.BooleanValue shouldDraw = blockConfigs.get(block);
 			if (shouldDraw == null || !shouldDraw.getAsBoolean()) continue;
 
@@ -164,7 +166,7 @@ public class Ores extends ScannerModule {
 				if (mc().player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) > maxDist) {
 					continue;
 				}
-				draw.drawOutlineBox(pos, color, alpha);
+				Gizmos.cuboid(pos, 0.1f, GizmoStyle.stroke(color, 1.5f)).setAlwaysOnTop();
 			}
 		}
 	}
@@ -175,33 +177,33 @@ public class Ores extends ScannerModule {
 	}
 
 	private static final Map<Block, Integer> blockColors = Map.ofEntries(
-		Map.entry(Blocks.ANCIENT_DEBRIS, ChatFormatting.DARK_AQUA.getColor()),
+		Map.entry(Blocks.ANCIENT_DEBRIS, Color.pack(ChatFormatting.DARK_AQUA)),
 
-		Map.entry(Blocks.DIAMOND_ORE, ChatFormatting.AQUA.getColor()),
-		Map.entry(Blocks.DEEPSLATE_DIAMOND_ORE, ChatFormatting.AQUA.getColor()),
+		Map.entry(Blocks.DIAMOND_ORE, Color.pack(ChatFormatting.AQUA)),
+		Map.entry(Blocks.DEEPSLATE_DIAMOND_ORE, Color.pack(ChatFormatting.AQUA)),
 
-		Map.entry(Blocks.REDSTONE_ORE, ChatFormatting.RED.getColor()),
-		Map.entry(Blocks.DEEPSLATE_REDSTONE_ORE, ChatFormatting.RED.getColor()),
+		Map.entry(Blocks.REDSTONE_ORE, Color.pack(ChatFormatting.RED)),
+		Map.entry(Blocks.DEEPSLATE_REDSTONE_ORE, Color.pack(ChatFormatting.RED)),
 
-		Map.entry(Blocks.IRON_ORE, ChatFormatting.GRAY.getColor()),
-		Map.entry(Blocks.DEEPSLATE_IRON_ORE, ChatFormatting.GRAY.getColor()),
+		Map.entry(Blocks.IRON_ORE, Color.pack(ChatFormatting.GRAY)),
+		Map.entry(Blocks.DEEPSLATE_IRON_ORE, Color.pack(ChatFormatting.GRAY)),
 
-		Map.entry(Blocks.GOLD_ORE, ChatFormatting.YELLOW.getColor()),
-		Map.entry(Blocks.DEEPSLATE_GOLD_ORE, ChatFormatting.YELLOW.getColor()),
-		Map.entry(Blocks.NETHER_GOLD_ORE, ChatFormatting.YELLOW.getColor()),
+		Map.entry(Blocks.GOLD_ORE, Color.pack(ChatFormatting.YELLOW)),
+		Map.entry(Blocks.DEEPSLATE_GOLD_ORE, Color.pack(ChatFormatting.YELLOW)),
+		Map.entry(Blocks.NETHER_GOLD_ORE, Color.pack(ChatFormatting.YELLOW)),
 
-		Map.entry(Blocks.COPPER_ORE, ChatFormatting.GOLD.getColor()),
-		Map.entry(Blocks.DEEPSLATE_COPPER_ORE, ChatFormatting.GOLD.getColor()),
+		Map.entry(Blocks.COPPER_ORE, Color.pack(ChatFormatting.GOLD)),
+		Map.entry(Blocks.DEEPSLATE_COPPER_ORE, Color.pack(ChatFormatting.GOLD)),
 
-		Map.entry(Blocks.COAL_ORE, ChatFormatting.BLACK.getColor()),
-		Map.entry(Blocks.DEEPSLATE_COAL_ORE, ChatFormatting.BLACK.getColor()),
+		Map.entry(Blocks.COAL_ORE, Color.pack(ChatFormatting.BLACK)),
+		Map.entry(Blocks.DEEPSLATE_COAL_ORE, Color.pack(ChatFormatting.BLACK)),
 
-		Map.entry(Blocks.EMERALD_ORE, ChatFormatting.GREEN.getColor()),
-		Map.entry(Blocks.DEEPSLATE_EMERALD_ORE, ChatFormatting.GREEN.getColor()),
+		Map.entry(Blocks.EMERALD_ORE, Color.pack(ChatFormatting.GREEN)),
+		Map.entry(Blocks.DEEPSLATE_EMERALD_ORE, Color.pack(ChatFormatting.GREEN)),
 
-		Map.entry(Blocks.LAPIS_ORE, ChatFormatting.BLUE.getColor()),
-		Map.entry(Blocks.DEEPSLATE_LAPIS_ORE, ChatFormatting.BLUE.getColor()),
+		Map.entry(Blocks.LAPIS_ORE, Color.pack(ChatFormatting.BLUE)),
+		Map.entry(Blocks.DEEPSLATE_LAPIS_ORE, Color.pack(ChatFormatting.BLUE)),
 
-		Map.entry(Blocks.NETHER_QUARTZ_ORE, ChatFormatting.GRAY.getColor())
+		Map.entry(Blocks.NETHER_QUARTZ_ORE, Color.pack(ChatFormatting.GRAY))
 	);
 }

@@ -49,7 +49,7 @@ public class ChatTweaks extends BaseModule {
 	void onChatClear(ChatClearEvent event) {
 		if (this.keepPrevious.getAsBoolean()) {
 			event.setCanceled(true);
-			mc().gui.getChat().addMessage(
+			mc().gui.hud.getChat().addClientSystemMessage(
 				Component.literal("----------").withStyle(ChatFormatting.DARK_GRAY)
 			);
 		}
